@@ -144,7 +144,10 @@ their datasheet delays) and a 7.16 MHz bus that's asynchronous to the FPGA clock
 | **sweep:** how soon after the address changes can the console sample read data? | **fails at ≤ 50 ns, clean at 55 ns** |
 
 **What that means for T3:** our data settles on the bus ~50 ns after the address
-changes. Most of that is the 74HCT688 decode (35 ns, datasheet worst case) and the
+changes. The MiSTer core's cycle-accurate CPU model latches read data at the
+**end** of its 6-tick cycle, ~140 ns after the address changes
+([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §1): ~85 ns of margin, if the real chip
+behaves like the model. Most of that is the 74HCT688 decode (35 ns, datasheet worst case) and the
 translator (8 ns). The console's cycle is 140 ns; if T3 shows it samples read data
 later than ~55 ns into the cycle (expected: near its end), we have margin. If not,
 the fix is known: a faster decoder (74AHCT family), or decode in the FPGA.

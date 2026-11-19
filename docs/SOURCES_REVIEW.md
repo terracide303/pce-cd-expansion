@@ -26,6 +26,9 @@ search of the OCR'd `.txt` extracts can't see. Plus `docs/`, `docs/archive/`,
 - The image-only pages of the Tech Notes (5) and the CD-ROM² Software Manual
   (20) are section title pages, not diagrams.
 
-So read timing comes **only** from the scope: [TEST_PLAN.md](TEST_PLAN.md) T3.
+The pin timing isn't in the documents, but the **MiSTer core's cycle-accurate CPU
+model** gives the bus structure: read data latched ~140 ns after the address
+changes ([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §1). The scope (T3) confirms it
+on the real chip.
 The simulation says this board needs the console to sample read data
 ≥ 55 ns after the address changes ([STAGE1.md](STAGE1.md) §7).

@@ -90,6 +90,11 @@ CH3 A20 (b19), CH4 HSM (b3). Trigger on /RD falling edge.
 | data hold after /RD rising | CH2 vs CH1 | how long we must keep driving |
 | /WR low width, data setup → /WR rising, hold after | move CH1 to /WR (b4), trigger on /WR | the write timing our latch must meet |
 
+**Expected** (MiSTer core's CPU model, [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md)
+§1): /RD falls ~47 ns after the address changes and read data is latched at /RD
+rising, ~140 ns after it. Our board needs ≥ 55 ns. A real chip that samples much
+earlier than the model would be the surprise this test exists to catch.
+
 **Pass:** the numbers are recorded. Then work the **budget**: translator delay
 (74HCT688 decode + 74LVC245 in + FPGA + 74LVC8T245 out, roughly 30–40 ns from
 datasheets) must fit inside "/RD falling → data needed", with margin.
