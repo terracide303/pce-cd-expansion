@@ -106,6 +106,7 @@ def main():
         fp.SetReference(ref)
         fp.SetValue(p["value"])
         fp.SetField("LCSC", p.get("lcsc", ""))          # schematic parity: same fields on both sides
+        fp.GetField("LCSC").SetVisible(False)
         fp.SetPath(pcbnew.KIID_PATH(paths[ref]))
         if ref == "J101":
             fp.SetPosition(mm(W / 2, H))       # fingers on the edge, fixed by the slot
