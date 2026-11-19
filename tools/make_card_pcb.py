@@ -155,7 +155,7 @@ def main():
 
     for text, y in [("PCE CD expansion card - HuCard 54.1 x 85.4 mm, 1.6 mm, 4 layers, ENIG, 45 deg bevel on the finger edge", H + 6),
                     ("Placement is human. Follow the Icepi Zero v1.4 layout for FPGA, SDRAM, flash and regulators.", H + 10),
-                    ("Translators close to the fingers; FPGA bus banks 6/7 (address) and 3 (data) face the edge.", H + 14)]:
+                    ("Bus: U1 right side (A0-A19, D0-D7, strobes) -> channel right of the SDRAM -> translator row.", H + 14)]:
         t = pcbnew.PCB_TEXT(board)
         t.SetText(text)
         t.SetPosition(mm(0, y))

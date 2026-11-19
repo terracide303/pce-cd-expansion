@@ -40370,7 +40370,7 @@
 			(justify left)
 		)
 	)
-	(gr_text "Translators close to the fingers; FPGA bus banks 6/7 (address) and 3 (data) face the edge."
+	(gr_text "Bus: U1 right side (A0-A19, D0-D7, strobes) -> channel right of the SDRAM -> translator row."
 		(at 0 99.4 0)
 		(layer "Cmts.User")
 		(uuid "6efd2f43-e39b-441d-8140-9ca0e95ec5df")

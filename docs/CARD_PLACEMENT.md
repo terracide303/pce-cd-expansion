@@ -42,7 +42,7 @@ core, +3V3 elsewhere, +2V5 where needed).
 | **U101–U103, U104** input translators, **U105** data translator | in a row right behind the 8.6 mm line | short bus stubs from the fingers |
 | **R110–R117** (33 Ω) | between U105 and the data fingers | series termination at the source side |
 | **R101** (/OE pull-up), **R102** (DIR pull-down), **R103**, **U106** IRQ buffer | next to U105 / U106 | |
-| bus banks of **U1** | rotate U1 so **banks 6/7** (address, left side `PL` balls) and **bank 3** (data) face the translators | the freed balls were chosen by bank for this |
+| bus side of **U1** | done by `tools/place_card.py`: the 32 right-side balls carry A0-A19, D0-D7, /RD, /WR, DDIR, /OE and face the channel right of the SDRAM | the freed balls are assigned by where they land (design.py FREED) |
 | **D101–D103** OR diodes, **C108** | near the regulators | +5V_CON from finger 38, VBUS_FT from J5, VBUS_RP from J102 |
 | **U107** RP2040, **U108** flash, **Y101** | between J102 and U1 | the RP2040's QSPI and crystal lines short |
 | **U110** PCM5102A, **J103** | near the top edge, away from SDRAM and the regulators' switch nodes | analogue audio |

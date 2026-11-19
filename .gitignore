@@ -9,3 +9,4 @@ impl/
 fpga_build.log
 hw/card/*.kicad_prl
 hw/card/*-backups/
+hw/card/snapshots/
