@@ -1,0 +1,4 @@
+(fp_lib_table (version 7)
+  (lib (name "pce_card")(type "KiCad")(uri "${KIPRJMOD}/pce_card.pretty")(options "")(descr "PCE card"))
+  (lib (name "icepi-lib")(type "KiCad")(uri "${KIPRJMOD}/reference/icepi-zero-v1.4/icepi-lib.pretty")(options "")(descr "Icepi Zero v1.4 footprints, Solderpad v2.1"))
+)
