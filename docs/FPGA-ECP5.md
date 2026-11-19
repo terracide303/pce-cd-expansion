@@ -36,11 +36,30 @@ inspiration board, so the 25F board's pinout carries over.
   (the Icepi Zero's gerbers are made for JLCPCB), not hand-soldered. Our KiCad flow
   and PCB HERO still apply; the BGA fan-out follows the Icepi Zero's layout.
 
+## 25F → 45F: drop-in, checked
+
+- **On hardware:** the owner has a working Icepi Zero built with the **45F**.
+- **On paper** (2026-11-19, Project Trellis `prjtrellis-db` `ECP5/LFE5U-25F|45F/iodb.json`,
+  CABGA256): both have the **same 197 user I/O balls**, every one in the **same bank
+  and the same side of its differential pair**. The only differences: 8 balls in the
+  top corners are extra **PLL clock inputs** on the 45F (A2, B1, B2, B3, A15, B14,
+  B15, B16; the 45F has two more PLLs). That only adds options. All 115 user-I/O
+  balls in the Icepi Zero v1.4 constraints are user I/O on the 45F; the 116th, N9
+  (`flash_clk`), is the dedicated configuration clock pin on both devices.
+- Not covered by that database: power and configuration balls. The working 45F
+  board covers those.
+
+## Card size
+
+**HuCard dimensions, 54.1 × 85.4 mm** (owner, 2026-11-19), so the gold fingers
+are exactly where a real card has them. The 9 mm extension
+([STAGE1-CARD.md](STAGE1-CARD.md) §1) stays an allowance, not the plan: an FPGA,
+SDRAM and flash fit on 65 × 30 mm on the Icepi Zero.
+
 ## To check before the schematic
 
 | question | how |
 |---|---|
-| is the LFE5U-45F in CABGA256 truly drop-in for the 25F (same ball map, power and config pins)? | Lattice ECP5 pinout files for both devices, compared ball by ball (a script, like `ext_bus.py`) |
 | the 45F's block RAM and LUTs (more than the 25F's 24k LUT / 112 KiB) | Lattice ECP5 family datasheet |
 | price and stock of the 45F BG256 at the fab's assembly service | the fab's parts library |
 | toolchain for the port: the MiSTer CD logic is **VHDL**; the open flow (Yosys + nextpnr) needs the GHDL plugin for VHDL, Lattice Diamond reads it natively | the Icepi Zero's `gateware/DIAMOND.md` and a test synthesis of `cd.vhd` |
