@@ -40308,6 +40308,154 @@
 			)
 		)
 	)
+	(gr_poly
+		(pts
+			(xy 45.5 44.95) (xy 35.5 44.95) (xy 36 45.65) (xy 46 45.65)
+		)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "9c81e4f7-b3f2-4ad4-8ef1-5eb72248e3e9")
+	)
+	(gr_poly
+		(pts
+			(xy 46.7 43.7) (xy 32.7 43.7) (xy 33.2 44.4) (xy 47.2 44.4)
+		)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "b63e61ba-bf00-4eb7-b133-f517d728d688")
+	)
+	(gr_poly
+		(pts
+			(xy 47.9 42.45) (xy 29.9 42.45) (xy 30.4 43.15) (xy 48.4 43.15)
+		)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "4e6e5cd7-6369-4bd2-8df2-bb9b0bf3712a")
+	)
+	(gr_poly
+		(pts
+			(xy 49.1 41.2) (xy 27.1 41.2) (xy 27.6 41.9) (xy 49.6 41.9)
+		)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "6e10c53d-ef62-41d8-b05b-da3bd846fd57")
+	)
+	(gr_poly
+		(pts
+			(xy 50 59.4) (xy 27 59.4) (xy 27.2 59.9) (xy 50.2 59.9)
+		)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill yes)
+		(layer "B.SilkS")
+		(uuid "27cb70e0-77e1-4aaa-821c-f6edc7bcb9e9")
+	)
+	(gr_arc
+		(start 32.62019 25.812892)
+		(mid 33.762873 24.532623)
+		(end 35.172857 23.554482)
+		(stroke
+			(width 0.35)
+			(type default)
+		)
+		(layer "B.SilkS")
+		(uuid "49eca3d3-24e1-4925-9b8b-2a6adc70592f")
+	)
+	(gr_arc
+		(start 33.403847 27)
+		(mid 34.743274 25.403733)
+		(end 36.547879 24.361844)
+		(stroke
+			(width 0.35)
+			(type default)
+		)
+		(layer "B.SilkS")
+		(uuid "72afd5c4-320f-4984-8759-e50b72fdd019")
+	)
+	(gr_arc
+		(start 34.612245 28.140479)
+		(mid 35.771734 26.629404)
+		(end 37.461196 25.749926)
+		(stroke
+			(width 0.35)
+			(type default)
+		)
+		(layer "B.SilkS")
+		(uuid "ef06fe18-bfd9-401a-8462-5aca94758d65")
+	)
+	(gr_circle
+		(center 38.6 30)
+		(end 39.5 30)
+		(stroke
+			(width 0.3)
+			(type default)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "a435bd66-6111-4bb2-b8d9-6c325e560ed9")
+	)
+	(gr_circle
+		(center 38.6 30)
+		(end 41.2 30)
+		(stroke
+			(width 0.7)
+			(type default)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "a2b12c97-7f55-4191-a2ab-37219a47f7a9")
+	)
+	(gr_circle
+		(center 38.6 30)
+		(end 47.2 30)
+		(stroke
+			(width 0.45)
+			(type default)
+		)
+		(fill no)
+		(layer "B.SilkS")
+		(uuid "40ef9c58-7577-4e06-819f-397a61c336fb")
+	)
+	(gr_arc
+		(start 42.587754 31.85952)
+		(mid 41.428265 33.370595)
+		(end 39.738803 34.250073)
+		(stroke
+			(width 0.35)
+			(type default)
+		)
+		(layer "B.SilkS")
+		(uuid "4ea27fa7-e13a-4899-9643-ad08a8ac0431")
+	)
+	(gr_arc
+		(start 43.796152 33)
+		(mid 42.456725 34.596266)
+		(end 40.65212 35.638155)
+		(stroke
+			(width 0.35)
+			(type default)
+		)
+		(layer "B.SilkS")
+		(uuid "b9fe850e-be92-4970-9e14-b6fff46664c5")
+	)
 	(gr_line
 		(start 0 0)
 		(end 54.1 0)
@@ -40347,6 +40495,81 @@
 		)
 		(layer "Edge.Cuts")
 		(uuid "d1cedcdf-7bff-4b8f-9c21-f1c0c25bd0fc")
+	)
+	(gr_text "TERRACIDE303 · PCE CD"
+		(at 38 56 0)
+		(layer "F.SilkS")
+		(uuid "c83b09d0-8458-4871-aabe-f3fa93e8d21c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+				(italic yes)
+			)
+		)
+	)
+	(gr_text "rev 0.1  ·  2026"
+		(at 38.6 69.2 0)
+		(layer "B.SilkS")
+		(uuid "06f3ec5e-cf14-4965-98dd-57ae89467a64")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "HuCARD  FPGA  CD-ROM²"
+		(at 38.6 67 0)
+		(layer "B.SilkS")
+		(uuid "2cf35be7-44a1-42b7-abf9-f4bcb2aa66d9")
+		(effects
+			(font
+				(size 1.1 1.1)
+				(thickness 0.18)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "CD EXPANSION"
+		(at 38.6 57 0)
+		(layer "B.SilkS")
+		(uuid "5f192339-73de-44d3-ade5-f2bba1ed3203")
+		(effects
+			(font
+				(size 2.2 2.2)
+				(thickness 0.35)
+				(italic yes)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "TERRACIDE303"
+		(at 38.6 63.2 0)
+		(layer "B.SilkS")
+		(uuid "1e527deb-26fb-4892-ae35-6b9efaef2484")
+		(effects
+			(font
+				(size 2.4 2.4)
+				(thickness 0.4)
+				(italic yes)
+			)
+			(justify mirror)
+		)
+	)
+	(gr_text "PCE"
+		(at 38.6 51.5 0)
+		(layer "B.SilkS")
+		(uuid "71572888-8b65-4148-97f6-f0f3ad10068a")
+		(effects
+			(font
+				(size 6.5 6.5)
+				(thickness 1.1)
+				(italic yes)
+			)
+			(justify mirror)
+		)
 	)
 	(gr_text "PCE CD expansion card - HuCard 54.1 x 85.4 mm, 1.6 mm, 4 layers, ENIG, 45 deg bevel on the finger edge"
 		(at 0 91.4 0)
@@ -40500,6 +40723,20 @@
 			(pts
 				(xy 0 76.8) (xy 54.1 76.8) (xy 54.1 85.4) (xy 0 85.4)
 			)
+		)
+	)
+	(group "art"
+		(uuid "6f8fa323-a991-4d27-b2a2-b7e9f8f52298")
+		(members "06f3ec5e-cf14-4965-98dd-57ae89467a64" "1e527deb-26fb-4892-ae35-6b9efaef2484"
+			"27cb70e0-77e1-4aaa-821c-f6edc7bcb9e9" "2cf35be7-44a1-42b7-abf9-f4bcb2aa66d9"
+			"40ef9c58-7577-4e06-819f-397a61c336fb" "49eca3d3-24e1-4925-9b8b-2a6adc70592f"
+			"4e6e5cd7-6369-4bd2-8df2-bb9b0bf3712a" "4ea27fa7-e13a-4899-9643-ad08a8ac0431"
+			"5f192339-73de-44d3-ade5-f2bba1ed3203" "6e10c53d-ef62-41d8-b05b-da3bd846fd57"
+			"71572888-8b65-4148-97f6-f0f3ad10068a" "72afd5c4-320f-4984-8759-e50b72fdd019"
+			"9c81e4f7-b3f2-4ad4-8ef1-5eb72248e3e9" "a2b12c97-7f55-4191-a2ab-37219a47f7a9"
+			"a435bd66-6111-4bb2-b8d9-6c325e560ed9" "b63e61ba-bf00-4eb7-b133-f517d728d688"
+			"b9fe850e-be92-4970-9e14-b6fff46664c5" "c83b09d0-8458-4871-aabe-f3fa93e8d21c"
+			"ef06fe18-bfd9-401a-8462-5aca94758d65"
 		)
 	)
 	(embedded_fonts no)
