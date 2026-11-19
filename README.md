@@ -60,6 +60,15 @@ exists yet. The design hand-off from the planning chat is
 - Sources are committed in [docs/datasheets/](docs/datasheets/); what each PCEHeroTN
   document does and does not give is in [docs/SOURCES_REVIEW.md](docs/SOURCES_REVIEW.md).
 
+## How far the research is
+
+[docs/RESEARCH-STATUS.md](docs/RESEARCH-STATUS.md) is the inventory: what is settled
+and by which source, what is assumed and which test would kill it, and what is
+missing. Short version: stage 1 is designed and unbuilt; stage 2 has a memory map
+and a register list and almost nothing below them (no BIOS behaviour, no SCSI
+sequence, no seek timing); the FPGA module and the audio path are undecided, and both
+change the carrier's footprint.
+
 ## Staged plan
 
 1. **De-risk (card edge):** the 20K answers as RAM at bank `$80`, booted from its

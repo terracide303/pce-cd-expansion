@@ -29,7 +29,7 @@ its own RDY, lines 168–170); slow mode (HSM low) is 24 ticks per cycle.
 
 | what | physical | logical (bank) | in the core | on a real console |
 |---|---|---|---|---|
-| **CD registers** | `$1FF800–$1FF8FF` | `$1800` page of bank `$FF` | `cd.vhd` `REG_SEL`: A20..13 = `$FF`, A12..8 = `11000` | CD interface unit. The CPU has **no chip enable** for this block ("reserved for extension", HuC6280 manual p.12), so our board decodes A20–A8 itself |
+| **CD registers** | `$1FF800–$1FF8FF` | `$1800` page of bank `$FF` | `cd.vhd` `REG_SEL`: A20..13 = `$FF`, A12..8 = `11000` | CD interface unit. The CPU has **no chip enable** for this block ("reserved for extension", HuC6280 manual p.12), so our board decodes A20–A8 itself. **Note:** 256 bytes is what the core decodes; the manual reserves `$1FF800–$1FFBFF` (1 KB), and `$1FF8C0–C7` is answered by *both* the CD unit and the Super System Card — see [RESEARCH-STATUS.md](RESEARCH-STATUS.md) §4 |
 | **CD RAM**, 64 KB | `$100000–$10FFFF` | banks `$80–$87` | `cd.vhd` `RAM_SEL` covers `$68–$87` as one 256 KB block | CD interface unit (stage 1 already answers here) |
 | **Super System Card RAM**, 192 KB | `$0D0000–$0FFFFF` | banks `$68–$7F` | same block | **inside the Super System Card HuCard.** If that card is plugged in, our board must NOT answer here, or two devices drive the bus. **Make it switchable** |
 | **Backup RAM**, 2 KB | `$1EE000–$1EE7FF` | bank `$F7` | `pce_top.vhd` `CPU_BRM_SEL_N`: A20..11 = `$F7`&`00` | CD interface unit; locked/unlocked through `$1807` / `$1803` |
