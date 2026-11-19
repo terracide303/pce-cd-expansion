@@ -58,6 +58,10 @@ exists yet. The design hand-off from the planning chat is
   the FPGA is a Tang Nano 20K module in a socket, its 34 header I/O cannot carry the
   card's address bus, so the SRAM on the carrier is addressed by the console and the
   FPGA owns only its own windows.
+- **The card (final board):** [docs/CARD.md](docs/CARD.md): HuCard-sized, ECP5-45F on
+  board, RP2040 companion, USB-C programming, stereo jack. Schematic generated and
+  checked against KiCad and the working Icepi Zero (`tools/check_card.py`, all pass);
+  PCB staged for placement ([docs/CARD_PLACEMENT.md](docs/CARD_PLACEMENT.md)).
 - **FPGA (decided 2026-11-19):** a Lattice **ECP5 LFE5U-45F** (CABGA256) soldered on
   the card, after the [Icepi Zero](https://github.com/cheyao/icepi-zero) board; the
   owner ports the core to it — [docs/FPGA-ECP5.md](docs/FPGA-ECP5.md).
