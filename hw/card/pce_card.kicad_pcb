@@ -1223,6 +1223,17 @@
 			(uuid "2750676f-2397-4616-a0ec-35058401b0ba")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/SW-SMD_L3.9-W2.9-H2.0-LS4.8.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Package_TO_SOT_SMD:SOT-23-5"
 		(layer "F.Cu")
@@ -7727,6 +7738,17 @@
 			)
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/TF-SMD_TF-008.step"
+			(offset
+				(xyz 0.04 3.37 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Inductor_SMD:L_0805_2012Metric"
 		(layer "F.Cu")
@@ -13222,7 +13244,7 @@
 			(uuid "f371fd6a-dc83-48a3-912a-c316927562bb")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Oscillator.3dshapes/Oscillator_SMD_SiT_PQFN-4Pin_2.5x2.0mm.step"
+		(model "${KIPRJMOD}/3dmodels/OSC-SMD_4P-L2.5-W2.0-H0.6.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -37113,6 +37135,17 @@
 			(uuid "3db09eff-fc9f-404c-91be-d9a1a168494f")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/SW-SMD_L3.9-W2.9-H2.0-LS4.8.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "icepi-lib:Texas_DRT-3"
 		(layer "B.Cu")
@@ -38873,6 +38906,17 @@
 			(uuid "07455fc5-bfd6-4506-bcb6-2139f2c7030f")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/SW-SMD_L3.9-W2.9-H2.0-LS4.8.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Capacitor_SMD:C_0603_1608Metric"
 		(layer "B.Cu")
