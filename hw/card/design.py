@@ -95,22 +95,22 @@ PIN_OVERRIDE = {("J5", p): "VBUS_FT" for p in ("A4", "A9", "B4", "B9")}
 # and what they carry on the card. Banks from prjtrellis-db (docs/FPGA-ECP5.md);
 # at 7.16 MHz any ball in a bank will do, so layout may swap within a bank.
 FREED = {
-    # bank 7 (14): A0-A13
-    "G3": "F_A0", "K3": "F_A1", "E1": "F_A2", "F3": "F_A3", "G1": "F_A4", "H2": "F_A5", "J1": "F_A6",
-    "G2": "F_A7", "J3": "F_A8", "E3": "F_A9", "H3": "F_A10", "F1": "F_A11", "F2": "F_A12", "J2": "F_A13",
-    # bank 6 (16): A14-A20, strobes, translator control, IRQ, 2 spares on test points
-    "T2": "F_A14", "R2": "F_A15", "R1": "F_A16", "P1": "F_A17", "N1": "F_A18", "R3": "F_A19", "N4": "F_A20",
-    "P2": "F_RD_N", "M2": "F_WR_N", "L1": "F_RST_N", "L2": "F_HSM",
-    "P3": "F_DDIR", "T3": "F_DOE_N", "T4": "F_IRQ2_N",
-    "R5": "F_SPARE0", "P5": "F_SPARE1",
-    # bank 3 (9): data
-    "R13": "F_D0", "T14": "F_D1", "R15": "F_D2", "T15": "F_D3", "P16": "F_D4", "R16": "F_D5",
-    "R12": "F_D6", "T13": "F_D7", "L14": None,
-    # bank 2 (7): RP2040 link and two I2S lines
-    "E16": "CO_SCK", "F15": "CO_MOSI", "J15": "CO_MISO", "J16": "CO_CS_N", "G15": "CO_IRQ",
-    "H14": "F_I2S_BCK", "E14": "F_I2S_LRCK",
-    # bank 0 (2), bank 1 (1)
-    "D4": "F_I2S_DIN", "E4": None, "E11": None,
+    # Assigned by WHERE the ball lands on the card (tools/place_card.py rotates the Icepi
+    # block 90 deg): the Icepi's header balls face the free column and the bus row, its
+    # GPDI/soft-USB balls face the other way. All are LVCMOS33, and at 7.16 MHz the bus
+    # cares about routability, not trace length, so the choice is the layout's.
+    # Right side (32, the old Pi header): data, translator control, A0-A19, /RD, /WR.
+    "E1": "F_D0", "E3": "F_D1", "E4": "F_D2", "D4": "F_D3", "F1": "F_D4", "F2": "F_D5", "F3": "F_D6", "G1": "F_D7",
+    "G2": "F_DDIR", "G3": "F_DOE_N",
+    "H2": "F_A0", "H3": "F_A1", "J1": "F_A2", "J2": "F_A3", "J3": "F_A4", "K3": "F_A5", "L1": "F_A6", "L2": "F_A7",
+    "M2": "F_A8", "N1": "F_A9", "N4": "F_A10", "P1": "F_A11", "P2": "F_A12", "P3": "F_A13", "R1": "F_A14",
+    "R2": "F_A15", "R3": "F_A16", "R5": "F_A17", "P5": "F_A18", "T2": "F_A19", "T3": "F_RD_N", "T4": "F_WR_N",
+    # Left side, toward the outer edge (8, old GPDI pairs): RP2040 link and I2S.
+    "R16": "CO_SCK", "P16": "CO_MOSI", "T15": "CO_MISO", "R15": "CO_CS_N", "T14": "CO_IRQ",
+    "T13": "F_I2S_BCK", "R13": "F_I2S_LRCK", "R12": "F_I2S_DIN",
+    # Left side, lower (9, old soft-USB/GPDI control): slow bus signals, spares to test points.
+    "J16": "F_A20", "E16": "F_RST_N", "J15": "F_HSM", "G15": "F_IRQ2_N",
+    "F15": "F_SPARE0", "L14": "F_SPARE1", "H14": None, "E14": None, "E11": None,
 }
 
 

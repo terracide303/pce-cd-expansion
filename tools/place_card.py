@@ -124,53 +124,79 @@ def main():
         fp.SetPosition(mm(x, y))
         occupied["F"].append(courtyard(fp))
 
-    # connectors on the outer edge, openings up (rot 180 = the USB4105 opening at -y)
-    put("J102", 31.0, 2.275, 180)
-    put("J103", 48.1, 8.5, 0)        # plug opening (the snout, -y) flush with the outer edge
-    # bus row right behind the slot zone (y < 76.8)
-    put("U101", 13.0, 71.5, 90)
-    put("U105", 26.0, 71.5, 90)
+    # Main parts at chosen spots. Signal flow: the bus leaves U1's right side and runs
+    # down the free column to the translator row; the RP2040 link and I2S leave U1's
+    # upper-left and cross the top of the block to the companion and the DAC.
+    put("J102", 31.0, 2.275, 180)     # companion USB-C, opening at the outer edge
+    put("J103", 48.1, 8.5, 0)         # jack: plug opening (the snout, -y) flush with the outer edge
+    put("U109", 31.0, 10.0, 0)        # USB ESD right behind J102
+    put("U107", 33.0, 22.0, 0)        # RP2040
+    put("U108", 33.0, 33.5, 0)        # its QSPI flash, below it
+    put("U110", 47.0, 27.0, 90)       # DAC under the jack
+    put("D101", 47.0, 43.0, 0)        # 5 V OR diodes
+    put("D102", 47.0, 46.5, 0)
+    put("D103", 47.0, 50.0, 0)
+    put("U101", 13.0, 71.5, 90)       # bus row, right behind the slot zone
+    put("U105", 26.0, 69.0, 90)       # 2.5 mm higher: its 33 ohm resistors go between it and the fingers
     put("U102", 38.5, 71.5, 90)
     put("U103", 48.5, 71.5, 90)
-    put("U104", 4.0, 70.0, 0)
+    put("U104", 4.0, 69.5, 0)
     put("U106", 4.0, 74.5, 0)
-    # companion, audio, power in the free column beside the block
-    put("U107", 33.0, 19.0, 0)
-    put("U108", 46.0, 22.5, 0)
-    put("Y101", 38.5, 13.0, 0)
-    put("U110", 40.0, 38.0, 0)
-    put("D101", 47.0, 52.0, 0)
-    put("D102", 47.0, 55.5, 0)
-    put("D103", 47.0, 59.0, 0)
+    # Translators: turn each one so its CONSOLE-side pins (BUS_* / T_D*) face the fingers
+    # (larger y) and its FPGA-side pins face the FPGA. Checked on the placed pads, not assumed.
+    for ref in ("U101", "U102", "U103", "U104", "U105", "U106"):
+        fp = fps[ref]
 
-    fixed = {"J102", "J103", "U101", "U102", "U103", "U104", "U105", "U106", "U107", "U108", "Y101", "U110",
-             "D101", "D102", "D103"}
-    anchor = {}
-    for p in design.PARTS:
-        r = p["ref"]
-        if p["origin"] != "card" or r in fixed or r.startswith("#") or r == "J101":
-            continue
-        net = {n for n in p["pins"].values() if n} - {"GND", "+3V3"}
-        sheet = p["sheet"]
-        if r.startswith("TP10"):
-            a = (30.0, 63.0)
-        elif r in ("R110", "R111", "R112", "R113", "R114", "R115", "R116", "R117"):
-            a = (26.0, 75.5)
-        elif r in ("R101", "R102", "C105", "C106"):
-            a = (26.0, 66.0)
-        elif r in ("C101", "C102", "C103", "C104"):
-            a = {"C101": (13, 66), "C102": (38.5, 66), "C103": (48.5, 66), "C104": (8, 70)}[r]
-        elif r in ("C107", "R103"):
-            a = (8.0, 75.0)
-        elif r in ("R125", "R126", "R127", "R128", "U109", "C136"):
-            a = (31.0, 10.5)
-        elif sheet == "companion":
-            a = (33.0, 19.0)
-        elif sheet == "audio":
-            a = (40.0, 38.0)
-        else:
-            a = (45.0, 55.0)
-        anchor[r] = a
+        def side_y(fp=fp):
+            con = [xy(pd.GetPosition())[1] for pd in fp.Pads() if pd.GetNetname().lstrip("/").startswith(("BUS_", "T_D"))]
+            fpga = [xy(pd.GetPosition())[1] for pd in fp.Pads() if pd.GetNetname().lstrip("/").startswith("F_")]
+            return sum(con) / len(con), sum(fpga) / len(fpga)
+        c, f = side_y()
+        if c < f:
+            fp.Rotate(fp.GetPosition(), pcbnew.EDA_ANGLE(180, pcbnew.DEGREES_T))
+        c, f = side_y()
+        print(f"{ref}: console pins at y {c:.1f}, FPGA pins at y {f:.1f} (console side faces the fingers: {c > f})")
+    fixed = {"J102", "J103", "U109", "U107", "U108", "U110", "D101", "D102", "D103",
+             "U101", "U102", "U103", "U104", "U105", "U106"}
+
+    # Every small part is anchored at the PIN it serves, pushed outward from its chip:
+    # decoupling at its own supply pin, pull-ups at their pin, series resistors on
+    # their line. CHIP says which chip a part belongs to.
+    CHIP = {**{f"C{120 + i}": "U107" for i in range(12)}, "C135": "U107", "R123": "U107", "R124": "U107",
+            "D104": "U107", "R122": "U107", "Y101": "U107", "C133": "Y101", "C134": "Y101",
+            "C132": "U108", "R120": "U108", "R121": "U108", "SW101": "U108",
+            "R125": "J102", "R126": "J102", "R127": "U109", "R128": "U109", "C136": "J102",
+            **{f"C{140 + i}": "U110" for i in range(7)}, "R130": "U110", "R131": "U110", "R132": "U110",
+            "C147": "J103", "C148": "J103", "R133": "U110", "R134": "U110", "R135": "U110", "C149": "U110",
+            "C101": "U101", "C102": "U102", "C103": "U103", "C104": "U104", "C105": "U105", "C106": "U105",
+            "R101": "U105", "R102": "U105", "C107": "U106", "R103": "U106", "C108": "D101",
+            **{f"R{110 + i}": "U105" for i in range(8)}}
+    POWER = {"GND", "+3V3", "+1V1_RP", "+5V_CON", "+5V_CARD"}
+    claimed = set()
+
+    def pin_anchor(ref):
+        chip = fps[CHIP[ref]]
+        cx, cy = xy(chip.GetPosition())
+        mine = {pd.GetNetname() for pd in fps[ref].Pads()} - {""}
+        best = None
+        for pd in chip.Pads():
+            n = pd.GetNetname()
+            if n not in mine or n.lstrip("/") == "GND":
+                continue
+            key = (CHIP[ref], pd.GetNumber())
+            px, py = xy(pd.GetPosition())
+            # a signal net is a firm match; a shared supply pin is claimed one part at a time
+            score = (0 if n.lstrip("/") not in POWER else 1, key in claimed, 0)
+            if best is None or score < best[0]:
+                best = (score, key, px, py)
+        if best is None:
+            return cx, cy
+        if best[0][0] == 1:
+            claimed.add(best[1])
+        _, _, px, py = best
+        dx, dy = px - cx, py - cy
+        d = math.hypot(dx, dy) or 1
+        return px + 2.2 * dx / d, py + 2.2 * dy / d
 
     def free(box, side="F"):
         x0, y0, x1, y1 = box
@@ -181,39 +207,65 @@ def main():
                 return False
         return True
 
-    order = sorted(anchor, key=lambda r: (anchor[r], r))
-    unplaced = []
-    for ref in order:
+    def place_near(ref, ax, ay):
         fp = fps[ref]
-        ax, ay = anchor[ref]
-        done = False
+        best = None
         for rot in (0, 90):
             fp.SetOrientationDegrees(rot)
             fp.SetPosition(mm(ax, ay))
             cx0, cy0, cx1, cy1 = courtyard(fp)
-            ox, oy = ax - cx0, ay - cy0          # courtyard offset from the anchor point
-            w, h = cx1 - cx0, cy1 - cy0
-            best = None
-            for ring in range(0, 120):
-                step = 0.25 * ring
-                cands = [(ax + dx, ay + dy) for dx in (-step, 0, step) for dy in (-step, 0, step)] if ring else [(ax, ay)]
-                for k in range(-ring, ring + 1):
-                    cands += [(ax + 0.25 * k, ay - step), (ax + 0.25 * k, ay + step), (ax - step, ay + 0.25 * k), (ax + step, ay + 0.25 * k)]
+            ox, oy, w, h = ax - cx0, ay - cy0, cx1 - cx0, cy1 - cy0
+            for ring in range(0, 100):
+                s = 0.25 * ring
+                cands = [(ax, ay)] if ring == 0 else (
+                    [(ax + 0.25 * k, ay - s) for k in range(-ring, ring + 1)] + [(ax + 0.25 * k, ay + s) for k in range(-ring, ring + 1)]
+                    + [(ax - s, ay + 0.25 * k) for k in range(-ring, ring + 1)] + [(ax + s, ay + 0.25 * k) for k in range(-ring, ring + 1)])
+                hit = None
                 for (x, y) in cands:
                     box = (x - ox, y - oy, x - ox + w, y - oy + h)
                     if free(box):
                         d = math.hypot(x - ax, y - ay)
-                        if best is None or d < best[0]:
-                            best = (d, x, y, box)
-                if best:
+                        if hit is None or d < hit[0]:
+                            hit = (d, x, y, box)
+                if hit:
+                    if best is None or hit[0] < best[0]:
+                        best = (hit[0], rot, hit[1], hit[2], hit[3])
                     break
-            if best:
-                fp.SetPosition(mm(best[1], best[2]))
-                occupied["F"].append(best[3])
-                done = True
-                break
-        if not done:
+        if best is None:
+            return False
+        fp.SetOrientationDegrees(best[1])
+        fp.SetPosition(mm(best[2], best[3]))
+        occupied["F"].append(best[4])
+        return True
+
+    unplaced = []
+    # Y101 first (its caps anchor to it), then the rest in a stable order
+    order = ["Y101"] + sorted(r for r in CHIP if r != "Y101")
+    for ref in order:
+        if not place_near(ref, *pin_anchor(ref)):
             unplaced.append(ref)
+    # test points in a column along the right edge, on a 2.54 mm pitch, reachable on the bench
+    tps = sorted(r for r in fps if r.startswith("TP1") and r not in kept)
+    for i, ref in enumerate(tps):
+        if not place_near(ref, 51.6 - (i // 6) * 2.6, 54.0 + (i % 6) * 2.54):
+            unplaced.append(ref)
+    rest = [p["ref"] for p in design.PARTS if p["origin"] == "card" and not p["ref"].startswith("#")
+            and p["ref"] not in fixed and p["ref"] not in CHIP and p["ref"] not in tps and p["ref"] != "J101"]
+    for ref in rest:
+        if not place_near(ref, 45.0, 55.0):
+            unplaced.append(ref)
+
+    # silkscreen: references of small parts go to the assembly (Fab) layer; the silk
+    # keeps chips and connectors, so it stays readable on a dense board
+    small = ("R_0402", "R_0603", "C_0402", "C_0603", "C_0805", "L_0805", "LED_0603", "D_SOD", "TestPoint", "R_0201")
+    moved = 0
+    for fp in fps.values():
+        if any(s in fp.GetFPID().GetLibItemName().wx_str() for s in small):
+            ref = fp.Reference()
+            ref.SetLayer(pcbnew.B_Fab if fp.IsFlipped() else pcbnew.F_Fab)
+            moved += 1
+    print(f"silkscreen: {moved} small-part references moved to the Fab layer")
+    anchor = CHIP
     if unplaced:
         print("NOT PLACED (no room near the anchor):", unplaced)
     board.Save(str(PCB))
