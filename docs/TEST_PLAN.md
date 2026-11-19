@@ -103,17 +103,28 @@ tool's structural checks will not catch it, which is exactly why this test exist
 
 ### T1d: The card's physical dimensions (caliper, a real HuCard, console unplugged)
 
-**Answers:** the three numbers no committed source has: **board thickness**,
-**finger pitch and width**, and **insertion depth**. The carrier cannot be ordered
-without them, and a wrong thickness either will not enter the slot or will not make
-contact.
+**Answers:** whether the reference numbers in
+[STAGE1-CARD.md](STAGE1-CARD.md) §1 hold on a real card. They come from a working
+repro board and the slot's drawing, not from a caliper, and the carrier cannot be
+ordered on someone else's geometry.
 
-**Also measure:** finger length, the bevel angle at the leading edge, the card's
-width and the position of the fingers along that edge (is the pattern centred?),
-and whether the fingers are gold-plated or tinned.
+| dimension | expected (confirm or correct) |
+|---|---|
+| PCB thickness | 1.6 mm |
+| card total thickness | ≈ 2.4 mm (a 0.75 mm shim gets a 1.6 mm board there) |
+| finger pitch | 1.27 mm |
+| finger width | 0.75 mm |
+| finger length | 5.0 mm (pins 1 and 38 at 5.5, pin 21 at 6.0) |
+| PCB outline | 54.1 × 85.4 mm |
+| insertion depth to the contacts | ≈ 8.6 mm, slot opening 2.9–2.95 mm |
 
-**Pass:** the numbers are recorded in `docs/test_results/`, and the fab can hit
-them (thin board, ENIG, bevelled edge).
+**Also check:** the bevel at the leading edge (present on a real card? at what
+angle?), whether the fingers are gold-plated, and where the finger pattern sits
+along the edge (centred?).
+
+**Pass:** the values are confirmed or corrected in `docs/test_results/`, and the
+first carrier's gerbers match. A wrong thickness either will not enter the slot or
+will not make contact.
 
 ### T2: The supply is healthy (multimeter + scope, console on, game running)
 

@@ -33,11 +33,66 @@ reaches the FPGA for stage 1:
 | mode flag | HSM (35): high = 7.16 MHz, the case we design for |
 | CD-detect, audio, IRQ2 | /CD (1) grounded by us, AUDIO IN (2) left open, /IRQ2 (37) left high-Z in stage 1 |
 
-**Three numbers are missing and must be measured on a real HuCard before the
-carrier is ordered** — no committed source has them: board **thickness**, finger
-**pitch and width**, and **insertion depth** of the fingers. Measured with a
-caliper, recorded in `docs/test_results/`; then the fab options (thin board, ENIG
-fingers, 45° bevel).
+### Dimensions
+
+No committed source had these, so they were taken from a working repro HuCard and
+from the datasheet drawing of the one slot you can buy
+([partlyhuman/HuCARD-repro](https://github.com/partlyhuman/HuCARD-repro), a fork
+of ichigobankai's reproduction cards; geometry only — no layout, no licence
+obligation is inherited by reading numbers off a board). These are the values to
+**confirm** with a caliper (T1d), not to discover:
+
+| dimension | value | source |
+|---|---|---|
+| PCB outline | **54.1 × 85.4 mm** | the repro board's `Edge.Cuts` |
+| PCB thickness | **1.6 mm** | its fab note: "fabricate at 1.6mm thickness" |
+| card total | **≈ 2.4 mm** | its gerber note, plus the **0.75 mm** riser it ships (`prints/HuCard riser.stl`) because a bare 1.6 mm PCB does not grip |
+| finger pitch | **1.27 mm** | its `HuCard_Edge` footprint (38 pads, span 46.99 mm) |
+| finger width | **0.75 mm** | same |
+| finger length | **5.0 mm**; pins 1 and 38 at 5.5, pin 21 at 6.0 | same |
+| contact span | **46.99 ± 0.1 mm** (38 × 1.27) | JT Studios slot drawing, "recommended PCB layout" |
+| slot opening height | **2.9–2.95 mm** | same drawing |
+| insertion depth to the contacts | **≈ 8.6 mm** | same drawing, section A-A |
+| finish | **ENIG, gold fingers, bevel on the front face only** | repro README |
+
+Consequences for the carrier:
+
+- **1.6 mm is the right board**, so no thin-board fab option; the grip comes from a
+  shim or a printed frame, exactly as the repro does it (2.9–2.95 mm of slot to
+  fill, so ~0.75 mm of shim and a little clearance).
+- fingers are **0.75 mm wide on 1.27 mm pitch**, i.e. **0.52 mm** between them:
+  a 0.25 mm trace fits, but barely. Keep the fan-out short, and never route a
+  signal between fingers *inside the contact area* — the slot's contacts press
+  there.
+- **8.6 mm of insertion depth** is used by the fingers and the slot: the
+  translators and the Tang must sit behind that line, which sets where the board's
+  parts can go relative to the card edge.
+- **Buy a JT Studios 38-pin slot** for bench work: it lets the carrier be probed,
+  powered and programmed outside a console, which is what T4b and T9 need. It turns
+  a mistake into a socket, not a console.
+
+### Does the Tang even fit on a card?
+
+The card is **54.1 × 85.4 mm**; the Tang Nano 20K is **54 × 23 mm**
+([PLACEMENT_BRIEF.md](PLACEMENT_BRIEF.md)). Its 54 mm side is therefore **0.05 mm
+wider than nothing** on a card's width: mounted across the card, its header rows
+land exactly on the card's long edges and there is no border left for a shim tab,
+a bevel or a probe point.
+
+Rotated so its 54 mm axis runs along the card's **depth**, the budget works:
+
+| | mm |
+|---|---|
+| fingers + slot insertion (nothing may be fitted here) | 8.6 |
+| translator row + 33 Ω resistors, close to the fingers | ~10 |
+| the Tang, along the depth axis | 54 |
+| **used** | **72.6** of 85.4 |
+| left over | 12.8 |
+
+The card's width then holds the 23 mm Tang plus **31 mm** of side area — which is
+where the decoder, the test points and the passives go. **Mount it that way.** The
+0.75 mm shim or printed frame goes on the **face away from the Tang**, and the board
+bevel (front face only) on the side the slot's guide sees.
 
 The console is the socket: there is no mating part to source, and no shroud,
 cable or bracket to design. But the card also has to carry the Tang, which is
@@ -174,9 +229,10 @@ that answers the only question that can kill the project.
 
 | question | answered by |
 |---|---|
-| card thickness, finger pitch/width, insertion depth | caliper on a real HuCard |
+| are the §1 dimensions right? (they come from a repro board and a slot drawing, not a caliper) | T1d: a caliper on a real HuCard, then the fabricated carrier |
+| does the bare 1.6 mm board grip well enough, or does it need the 0.75 mm shim | T1d on the first carrier: does it stay seated with a probe attached |
 | does the console tolerate a card driving above the window | T4b |
-| data-order reversal between PC Engine and TurboGrafx-16 | a TG16 with a PCE card, or a continuity check; until then build PCE and put the swap in `fpga/*.cst`, not the copper |
+| data-order reversal between PC Engine and TurboGrafx-16 | **answered, and it is not a hardware problem.** The card is the same; the region difference is a **reversal of every data byte's bit order**. The HuConv tool that prepares images for these repro cards emits a TG16 variant by mapping bit 0↔7, 1↔6, 2↔5, 3↔4 (`HuCONV_v1.5/huconv.py` lines 142–152). So it is a mapping in the FPGA — free — or a setting when an image is loaded. No jumper, no CST difference, no second PCB. |
 | does the card slot have series resistors that spoil drive levels | the schematic's CN202 area, then T4b's scope trace |
 | how much current the slot will give the Tang | measure with the board fitted; the Tang's own USB-C stays the primary supply, the card edge feeds only the bus side |
 | does the Tang's own 27 MHz PLL care that there is no bus clock on this connector | it does not (the design is fully asynchronous) — but confirm at bring-up |

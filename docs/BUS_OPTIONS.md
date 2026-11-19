@@ -80,7 +80,7 @@ that act is identical whether it comes from the card or from the port.
 | **no K7** | CD presence is port pin b2. As the System Card we do not need it; a *game* that polls port K itself would see no drive. **Unmeasured** — check by disassembling a few discs' code before stage 2. |
 | **no RDY** | wait states are unavailable, so the data must be ready in the cycle. The sim says it is, with ~85 ns to spare against the model's ~140 ns latch point ([STAGE1.md](STAGE1.md) §7). |
 | **driving outside `/CE` is undocumented** | no source says the console tolerates it; it is the same decode the port needs, but it is worth one scope probe before the carrier is ordered (TEST_PLAN T4b). |
-| **region data order** | the wiki: D0–D7 ascend on a PC Engine and descend on a TurboGrafx-16. A card built for one may not boot on the other. **Open**, and card-only — see §7. |
+| **region data order** | the wiki says D0–D7 ascend on a PC Engine and descend on a TurboGrafx-16. **Answered, and it costs nothing**: the same card serves both, because the difference is a per-byte **bit reversal** — HuConv, the tool that prepares images for the repro cards, emits a TG16 image by mapping bit 0↔7 … 3↔4 (`HuCONV_v1.5/huconv.py` lines 142–152). In the FPGA that is a free mapping, or a setting at load time. |
 
 ## 6. The pin budget is not improved, and nobody should claim it is
 
@@ -99,9 +99,9 @@ see. Stage 2 gets worse (34–36 pins against 28 safe,
 |---|---|
 | Does the real card edge match the wiki's 38 pins? | TEST_PLAN T1c: continuity from card fingers to the **already verified** rear-port pins — the port is the second source the card pinout otherwise lacks |
 | Does the console tolerate a card driving `$1FF800` / `$100000`? | a scope on `/RD`, A20 and D0 during a self-test ROM's read of its own RAM (T4b); then T8 |
-| Is a HuCard's data order really reversed on a TG16? | a TG16 with a PCE card, or a continuity check; until then, build PCE, and put the swap in the pin constraints, not the PCB |
+| *(removed)* the TG16 data order | answered above: a bit reversal per byte, handled in the FPGA or at image load |
 | Do games poll K7 directly? | disassemble a few discs' loader code before stage 2 |
-| Card thickness, bevel, finger plating | measure a real HuCard with a caliper; JLCPCB 0.8–1.0 mm + ENIG + bevel |
+| Card dimensions: thickness, pitch, depth | **known** from a working repro board and the slot drawing — 1.6 mm, 1.27 mm pitch, 0.75 mm fingers, 8.6 mm insertion ([STAGE1-CARD.md](STAGE1-CARD.md) §1); a caliper on a real HuCard confirms it (T1d) |
 
 ## 8. What changed in the repo
 
@@ -109,7 +109,7 @@ see. Stage 2 gets worse (34–36 pins against 28 safe,
 - `docs/hucard_pinout.csv` + `tools/hucard_bus.py` — the card edge as data, checked.
 - `docs/STAGE1.md` — kept: it is the port variant, now stage 1b, and stage 2's host.
 - `docs/TEST_PLAN.md` — T1c/T4b added, T8 rewritten; T1, T1b, T2 unchanged in intent.
-- `README.md` — status.
+- `README.md` — status, and the references for card geometry and region handling.
 
 ## 9. What would reverse this
 
