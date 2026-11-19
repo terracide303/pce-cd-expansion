@@ -61,7 +61,13 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 ## 3. Missing: what blocks ordering the carrier
 
-1. **The FPGA module is undecided, and it is decided by the BIOS, not the flash cart.**
+1. **Decided 2026-11-19 (owner): the Tang Nano 20K stays.** Bigger modules cost too
+   much, and the owner's core (PCEHeroTN) targets only its GW2AR-18. The pin shortage
+   below is therefore solved on the carrier (board B's SRAM, latches or a CPLD), not by
+   a bigger FPGA. Later option, same chip, so the core still fits: a GW2AR-18 soldered
+   directly on the card for more pins (fine pitch, fab-assembled). The analysis that
+   led here, kept for the record:
+   **The FPGA module was undecided, and it is decided by the BIOS, not the flash cart.**
    Size budget (owner's decision 2026-11-19, [STAGE1-CARD.md](STAGE1-CARD.md) §1):
    the card may stick out of the console by 9 mm, outline at most 54.1 × 94.4 mm,
    so a module must fit **~54 × 75 mm** — or the FPGA goes directly on the card.

@@ -137,6 +137,11 @@ choice can be made with the numbers in front of us:
 
 **Board A is the recommended first order** and nothing has been ordered.
 
+Since the Tang Nano 20K is now fixed (owner, 2026-11-19, [RESEARCH-STATUS.md](RESEARCH-STATUS.md) §3):
+the EverDrive proves the architecture on a different FPGA; **board A proves it on
+ours** (its I/O, the translators, the decoder, the slot), cheaply. **Board B is the
+product path**, because it is how a 24-pin module carries a full CD system.
+
 ### The Tang footprint, verified
 
 `hw/stage1/pce_exp.pretty/TangNano20K_Sockets.kicad_mod` already exists and measures
