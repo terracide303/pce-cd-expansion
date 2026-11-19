@@ -15,7 +15,7 @@ sheet. Placement is human (PCB HERO's rule), and with a 0.8 mm BGA the FPGA, SDR
 and regulators should follow the Icepi Zero's proven arrangement.
 
 Also writes the .kicad_dru, the project rules and board.json for PCB HERO's checker.
-Stack-up is the Icepi Zero v1.4's (4-layer JLC04121H-7628); rules are what JLCPCB and
+Stack-up is the Icepi Zero v1.4's (4-layer, 1.6 mm: JLCPCB JLC04161H-7628 -- 7628 prepreg 0.2104 mm, core 1.065 mm); rules are what JLCPCB and
 PCBWay both make at standard price (FAB below).
 """
 import json, os, pathlib, re, subprocess, sys, tempfile
@@ -202,7 +202,7 @@ STACKUP = """\t\t(stackup
 
 
 def add_stackup():
-    """The Icepi Zero v1.4 stack-up (JLC04121H-7628, 1.6 mm), plus ENIG and a bevelled edge connector."""
+    """The Icepi Zero v1.4 stack-up (1.6 mm, JLCPCB JLC04161H-7628), plus ENIG and a bevelled edge connector."""
     t = PCB.read_text(encoding="utf-8")
     if "(stackup" not in t:
         t = re.sub(r"\(setup\n", "(setup\n" + STACKUP, t, count=1)

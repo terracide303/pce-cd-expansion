@@ -356,6 +356,21 @@ for i, net in enumerate(["+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP", "+3V3", "+
                          "PWR_FILTERED_2V5", "GND"]):
     part(f"#FLG1{i:02d}", "power:PWR_FLAG", "PWR_FLAG", "", "power", {"1": net})
 
+# --- LCSC numbers for the card's plain passives: the Icepi BOM's number for the SAME
+# value and footprint (a looked-up part on a board that was assembled), nothing else.
+def _norm(v):
+    v = v.lower().replace(" ", "").replace("Ω", "").replace("ohm", "")
+    return v[:-1] if v.endswith("f") else v
+
+
+_ICEPI_LCSC = {}
+for _p in PARTS:
+    if _p["origin"] == "icepi" and _p["lcsc"]:
+        _ICEPI_LCSC.setdefault((_norm(_p["value"]), _p["fp"].split(":")[-1]), _p["lcsc"])
+for _p in PARTS:
+    if _p["origin"] == "card" and not _p["lcsc"] and _p["fp"]:
+        _p["lcsc"] = _ICEPI_LCSC.get((_norm(_p["value"]), _p["fp"].split(":")[-1]), "")
+
 SHEETS = ["bus", "power", "fpga", "flash", "sdram", "sd", "usb_jtag", "companion", "audio"]
 SHEET_TITLES = {"bus": "Card edge and bus translators", "power": "Power: input OR-ing and Icepi regulators",
                 "fpga": "FPGA clock, LEDs, buttons (Icepi)", "flash": "Configuration flash (Icepi)",

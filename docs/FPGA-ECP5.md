@@ -16,7 +16,7 @@ inspiration board, so the 25F board's pinout carries over.
 | memory | 256 Mbit SDRAM (16-bit), 128 Mbit flash, microSD, 112 KiB block RAM |
 | other | 50 MHz oscillator, on-board USB-JTAG/UART, mini HDMI-style video, 3 × USB-C |
 | user I/O on the 40-pin header | **28**, LVCMOS33 (`gateware/v1.4/icepi-zero-v1_4.lpf`) |
-| PCB | 4-layer, JLC04121H-7628 stack-up, 1.2 or 1.6 mm, KiCad sources in `hardware/v1.0`–`v1.4` |
+| PCB | 4-layer, 1.2 or 1.6 mm; the card uses 1.6 mm, JLCPCB stack-up JLC04161H-7628 (7628 prepreg 0.2104 mm, core 1.065 mm), KiCad sources in `hardware/v1.0`–`v1.4` |
 | licence | **Solderpad Hardware License v2.1**, a wrapper around Apache-2.0: reuse allowed with attribution and the licence notice |
 
 ## What changes for this project

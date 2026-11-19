@@ -16,7 +16,9 @@ general method, and the lessons behind each step, are in PCB HERO's playbook
 | 5d. 3D models | `... python.exe tools/models_card.py` | models for parts whose footprints have none (microSD, buttons, oscillator), aligned to our pads; visual only |
 | 6. parity + DRC | `kicad-cli pcb drc --schematic-parity hw/card/pce_card.kicad_pcb` | board = schematic |
 | 7. **look at it** | `python ../PCBHero/scripts/snapshot.py hw/card/pce_card.kicad_pcb`, or the panel's Viewer | answer the checklist in writing; fix what the picture shows |
-| 8. commit | with what the render showed in the message | |
+| 8. route | from `../PCBHero/tools/KiCadRoutingTools`: `python -X utf8 ../../scripts/autoroute_pinned.py in.kicad_pcb out.kicad_pcb` (or the panel) | planes, BGA fanout, every net, at the standard fab floor |
+| 9. fab files | `python tools/fab_card.py` | refuses unless DRC (planes refilled) shows 0 unconnected, 0 schematic differences, only accepted items; then gerbers + drill zip, BOM, CPL. Order settings: [ORDER.md](ORDER.md) |
+| 10. commit | with what the render showed in the message | |
 
 Steps 4–5 rebuild the board from scratch. Once a human starts editing placement
 in KiCad, stop running them and edit in KiCad (or teach `place_card.py` the change).
@@ -32,3 +34,12 @@ in KiCad, stop running them and edit in KiCad (or teach `place_card.py` the chan
 - **Part numbers not looked up stay empty.**
 - **Renders are reviewed before a step is called done**: three placement faults
   passed every check and were obvious in a picture.
+- **The rules are the fab's, not ours.** `make_card_pcb.py` holds the floor both
+  JLCPCB and PCBWay make at standard price (0.1 mm, 0.45/0.2 mm vias, silkscreen
+  1.0 mm text / 0.15 mm lines), written into the board so every DRC checks it.
+  A router that relaxes a rule must be caught by that DRC, not trusted.
+- **A borrowed board is not automatically buildable.** The Icepi's microSD
+  socket had copper 0.025 mm from the edge; the whole block now sits 0.3 mm in.
+- **A script that loads a KiCad file must not need a click.** A missing font
+  makes KiCad's Python open a dialog and wait; `place_card.py` strips font
+  names from the borrowed board before loading it.

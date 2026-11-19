@@ -7763,7 +7763,7 @@
 		(property "Value" "10u" (at 236.855 137.16 0) (effects (font (size 1.27 1.27)) ))
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 236.22 134.62 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 236.22 134.62 0) (effects (font (size 1.27 1.27)) (hide yes)))
-		(property "LCSC" "" (at 236.22 134.62 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "LCSC" "C19702" (at 236.22 134.62 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(pin "1" (uuid "bc4932f4-bd77-5d25-873f-6c08da48cac2"))
 		(pin "2" (uuid "afefb236-83b2-53d0-9cf8-ef04954d54b3"))
 		(instances (project "pce_card" (path "/a204256d-5584-5073-8db6-88a2dac352c8/ef4dba3e-4ba0-54c5-8250-e30bbc5178d5" (reference "C108") (unit 1))))
