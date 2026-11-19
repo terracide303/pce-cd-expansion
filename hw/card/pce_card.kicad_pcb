@@ -317,7 +317,7 @@
 		(descr "54-lead TSOP typ II package")
 		(tags "TSOPII TSOP2")
 		(property "Reference" "U11"
-			(at 0 -12.5 0)
+			(at 8.53619 1.5 0)
 			(layer "F.SilkS")
 			(uuid "778467a5-eba6-476d-b15f-7ab076ac437c")
 			(effects
@@ -948,14 +948,14 @@
 		(uuid "0be6da42-cc19-40b7-bf8f-659ab8670aa1")
 		(at 33 38.5)
 		(property "Reference" "SW101"
-			(at 5.4 0 0)
+			(at -5.576191 2.5 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "814f949e-7041-4384-976a-9e7846539a7a")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
 			)
 		)
@@ -1231,13 +1231,13 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178)")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U106"
-			(at 0 -2.4 0)
-			(layer "F.SilkS")
+			(at 7.4036 -2.0875 90)
+			(layer "F.Fab")
 			(uuid "4544a2c3-2e7a-4a53-8670-4b99ef851136")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 0.8 0.8)
+					(thickness 0.12)
 				)
 			)
 		)
@@ -2325,7 +2325,7 @@
 		(descr "TSSOP, 20 Pin (JEDEC MO-153 Var AC https://www.jedec.org/document_search?search_api_views_fulltext=MO-153)")
 		(tags "TSSOP SO")
 		(property "Reference" "U102"
-			(at 0 -4.2 90)
+			(at 4.87325 0 0)
 			(layer "F.SilkS")
 			(uuid "f77bb6cf-5bb8-4e92-941d-629d3f646392")
 			(effects
@@ -3705,7 +3705,7 @@
 		(descr "TSSOP, 20 Pin (JEDEC MO-153 Var AC https://www.jedec.org/document_search?search_api_views_fulltext=MO-153)")
 		(tags "TSSOP SO")
 		(property "Reference" "U101"
-			(at 0 -4.2 90)
+			(at 4.87325 0 0)
 			(layer "F.SilkS")
 			(uuid "c666e9e8-209a-4876-b11c-feb963a52f63")
 			(effects
@@ -5942,7 +5942,7 @@
 		(descr "TSSOP, 20 Pin (JEDEC MO-153 Var AC https://www.jedec.org/document_search?search_api_views_fulltext=MO-153)")
 		(tags "TSSOP SO")
 		(property "Reference" "U110"
-			(at 0 -4.2 90)
+			(at 6.37325 2 0)
 			(layer "F.SilkS")
 			(uuid "7f3a2bd6-40d2-4440-b91c-30264cf95b7f")
 			(effects
@@ -6367,7 +6367,7 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178)")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U3"
-			(at 0 -2.4 0)
+			(at 4.85 0.9125 0)
 			(layer "F.SilkS")
 			(uuid "574187a1-85eb-4b6f-8012-38fb49c22a85")
 			(effects
@@ -6762,13 +6762,13 @@
 		(at 27.05 85.4)
 		(descr "HuCard edge connector, 38 fingers at 1.27 mm (PC Engine). Geometry from a working repro card, docs/STAGE1-CARD.md; print 1:1 and check against a real HuCard before ordering (TEST_PLAN T1b).")
 		(property "Reference" "J101"
-			(at 0 -9.6 0)
-			(layer "F.SilkS")
+			(at 32.428599 -6.2 90)
+			(layer "F.Fab")
 			(uuid "be7a9896-f69f-4e40-b05d-1ab269b25ca6")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 0.8 0.8)
+					(thickness 0.12)
 				)
 			)
 		)
@@ -7433,14 +7433,14 @@
 		(uuid "3def2790-c6a3-47f9-995b-0a76c41eefa1")
 		(at 17.475 2.545 180)
 		(property "Reference" "J6"
-			(at 0 -10 180)
+			(at -11.3786 -1.25 90)
 			(unlocked yes)
-			(layer "F.SilkS")
+			(layer "F.Fab")
 			(uuid "eed15a30-5664-49c8-b685-96d26cf85436")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.1)
+					(size 0.8 0.8)
+					(thickness 0.12)
 				)
 			)
 		)
@@ -7894,7 +7894,7 @@
 		(descr "QFN, 20 Pin (http://ww1.microchip.com/downloads/en/PackagingSpec/00000049BQ.pdf#page=274)")
 		(tags "QFN NoLead")
 		(property "Reference" "U9"
-			(at 0 -3.3 0)
+			(at -0.187501 -3.62325 0)
 			(layer "F.SilkS")
 			(uuid "f88f2bb4-7c9a-417e-a670-34984035f8e5")
 			(effects
@@ -9132,7 +9132,7 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178)")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U4"
-			(at 0 -2.4 90)
+			(at 0 -3.175 0)
 			(layer "F.SilkS")
 			(uuid "e9edf696-9c89-48b9-8595-3656ab9bcc71")
 			(effects
@@ -10482,7 +10482,7 @@
 		(descr "Texas Instrument DRT-3 1x0.8mm Pitch 0.7mm http://www.ti.com/lit/ds/symlink/tpd2eusb30.pdf")
 		(tags "DRT-3 1x0.8mm Pitch 0.7mm")
 		(property "Reference" "U109"
-			(at 0 -1.5 0)
+			(at 6.052381 2.01 0)
 			(layer "F.SilkS")
 			(uuid "12b16593-87a4-47a3-99fa-ffdf8efd787d")
 			(effects
@@ -11329,7 +11329,7 @@
 		(descr "SOIC, 8 Pin (JEITA/EIAJ ED-7311-19 variation 08-001-BBA and Atmel/Microchip, 208 mils width, https://www.jeita.or.jp/japanese/standard/book/ED-7311-19/#target/page_no=21, https://ww1.microchip.com/downloads/en/DeviceDoc/20005045C.pdf#page=23, https://ww1.microchip.com/downloads/en/DeviceDoc/doc2535.pdf#page=162)")
 		(tags "SOIC SO P-SOP SOP SOP-8 SO SO-8 8S2 S2AE/F K04-056 CASE-751BE SO8W 8-Pin-SOIC PSA W8-2 W8-4 W8MS-1 FPT-8P-M08")
 		(property "Reference" "U12"
-			(at 0 -3.6 0)
+			(at 6.426191 -1.0525 0)
 			(layer "F.SilkS")
 			(uuid "af7ca2f7-4ba7-4c9b-af1d-ca43538cfed5")
 			(effects
@@ -12127,7 +12127,7 @@
 		(descr "USB 2.0 Type C Receptacle, GCT, 16P, top mounted, horizontal, 5A: https://gct.co/files/drawings/usb4105.pdf")
 		(tags "USB C Type-C Receptacle SMD USB 2.0 16P 16C USB4105-15-A USB4105-15-A-060 USB4105-15-A-120 USB4105-GF-A USB4105-GF-A-060 USB4105-GF-A-120")
 		(property "Reference" "J5"
-			(at 0 -5.5 180)
+			(at 0 -7.28325 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "62f150a7-7786-4205-a739-b3528c7539f0")
@@ -13054,7 +13054,7 @@
 		(at 21.975 24.275 -90)
 		(descr "SiTime SiT8008B, MEMS programmable oscillator, 2.5x2.0mm package, SMD, https://www.sitime.com/datasheet/SiT8008 page 10")
 		(property "Reference" "Y1"
-			(at 0 -2.2 90)
+			(at 0 -2.749762 0)
 			(layer "F.SilkS")
 			(uuid "60ba6130-26b9-416f-955f-361c23447877")
 			(effects
@@ -13767,7 +13767,7 @@
 		(descr "SOIC, 8 Pin (JEITA/EIAJ ED-7311-19 variation 08-001-BBA and Atmel/Microchip, 208 mils width, https://www.jeita.or.jp/japanese/standard/book/ED-7311-19/#target/page_no=21, https://ww1.microchip.com/downloads/en/DeviceDoc/20005045C.pdf#page=23, https://ww1.microchip.com/downloads/en/DeviceDoc/doc2535.pdf#page=162)")
 		(tags "SOIC SO P-SOP SOP SOP-8 SO SO-8 8S2 S2AE/F K04-056 CASE-751BE SO8W 8-Pin-SOIC PSA W8-2 W8-4 W8MS-1 FPT-8P-M08")
 		(property "Reference" "U108"
-			(at 0 -3.6 0)
+			(at -6.902381 -0.052501 0)
 			(layer "F.SilkS")
 			(uuid "b02a5926-8b56-46be-aa0c-be37af8c29f6")
 			(effects
@@ -14136,13 +14136,13 @@
 		(descr "QFN, 56 Pin (https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf#page=607)")
 		(tags "QFN NoLead")
 		(property "Reference" "U107"
-			(at 0 -4.83 0)
-			(layer "F.SilkS")
+			(at 9.4836 -2 90)
+			(layer "F.Fab")
 			(uuid "6ae975d9-3819-4f95-8d91-96fcf929df43")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 0.8 0.8)
+					(thickness 0.12)
 				)
 			)
 		)
@@ -15871,7 +15871,7 @@
 		(descr "TSSOP, 20 Pin (JEDEC MO-153 Var AC https://www.jedec.org/document_search?search_api_views_fulltext=MO-153)")
 		(tags "TSSOP SO")
 		(property "Reference" "U103"
-			(at 0 -4.2 90)
+			(at 10.602382 -2 90)
 			(layer "F.SilkS")
 			(uuid "44e4831f-3f09-4930-a41d-73bbd530450b")
 			(effects
@@ -18623,7 +18623,7 @@
 		(descr "BGA-256, dimensions: https://www.xilinx.com/support/documentation/package_specs/ft256.pdf, design rules: https://www.xilinx.com/support/documentation/user_guides/ug1099-bga-device-design-rules.pdf")
 		(tags "BGA-256")
 		(property "Reference" "U1"
-			(at 0 -8.2 0)
+			(at 9.3 0 0)
 			(layer "F.SilkS")
 			(uuid "cfcf921f-e2ee-4af3-a14d-51344f7408f6")
 			(effects
@@ -21225,7 +21225,7 @@
 		(descr "3.5 mm, Stereo, Right Angle, Surface Mount (SMT), Audio Jack Connector (https://www.cui.com/product/resource/sj-352x-smt-series.pdf)")
 		(tags "3.5mm audio cui horizontal jack stereo")
 		(property "Reference" "J103"
-			(at 0 -9.9 0)
+			(at -7.709524 0 0)
 			(layer "F.SilkS")
 			(uuid "0276e1c4-3991-44d8-b4a0-679de0ddf10f")
 			(effects
@@ -21762,7 +21762,7 @@
 		(descr "TSSOP, 24 Pin (JEDEC MO-153 variation AD, 1.00mm body thickness, https://www.jedec.org/document_search?search_api_views_fulltext=MO-153)")
 		(tags "TSSOP SO")
 		(property "Reference" "U105"
-			(at 0 -4.85 90)
+			(at -5.24825 0 0)
 			(layer "F.SilkS")
 			(uuid "6b3574be-f4ee-4ab2-8ebf-5a4f17821548")
 			(effects
@@ -22537,7 +22537,7 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178)")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U2"
-			(at 0 -2.4 0)
+			(at 4.849999 0.9125 0)
 			(layer "F.SilkS")
 			(uuid "cf9802c8-4477-4e0a-9da2-2fdf6df2a7f2")
 			(effects
@@ -23727,7 +23727,7 @@
 		(descr "USB 2.0 Type C Receptacle, GCT, 16P, top mounted, horizontal, 5A: https://gct.co/files/drawings/usb4105.pdf")
 		(tags "USB C Type-C Receptacle SMD USB 2.0 16P 16C USB4105-15-A USB4105-15-A-060 USB4105-15-A-120 USB4105-GF-A USB4105-GF-A-060 USB4105-GF-A-120")
 		(property "Reference" "J102"
-			(at 0 -5.5 180)
+			(at -7.429524 -0.29 0)
 			(unlocked yes)
 			(layer "F.SilkS")
 			(uuid "4fa46680-35bd-4226-9d1b-f10d6c828f58")
@@ -24385,7 +24385,7 @@
 		(descr "SOT, 5 Pin (JEDEC MO-178 Var AA https://www.jedec.org/document_search?search_api_views_fulltext=MO-178)")
 		(tags "SOT TO_SOT_SMD")
 		(property "Reference" "U104"
-			(at 0 -2.4 0)
+			(at 0 4.223251 0)
 			(layer "F.SilkS")
 			(uuid "8f1e7f0b-2e5d-42ac-9fe2-c066ec701819")
 			(effects
@@ -25305,13 +25305,13 @@
 		(at 32.021719 28.354734)
 		(descr "SMD3225/4, Crystal, 3.2x2.5mm package, SMD, http://www.txccrystal.com/images/pdf/7m-accuracy.pdf")
 		(property "Reference" "Y101"
-			(at 0 -2.45 0)
-			(layer "F.SilkS")
+			(at 7.4536 -2 90)
+			(layer "F.Fab")
 			(uuid "33936540-306c-4a39-bdb9-7508da27a2f5")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 0.8 0.8)
+					(thickness 0.12)
 				)
 			)
 		)
@@ -36832,14 +36832,14 @@
 		(uuid "b62dd9ab-d53b-4872-8dee-21c288aea412")
 		(at 18.875 46.425 -90)
 		(property "Reference" "SW1"
-			(at 5.4 0 90)
+			(at 5.32325 0 0)
 			(unlocked yes)
 			(layer "B.SilkS")
 			(uuid "f36f11f1-4552-46ef-9baa-4306f8c816e6")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
 				(justify mirror)
 			)
@@ -37121,7 +37121,7 @@
 		(descr "Texas Instrument DRT-3 1x0.8mm Pitch 0.7mm http://www.ti.com/lit/ds/symlink/tpd2eusb30.pdf")
 		(tags "DRT-3 1x0.8mm Pitch 0.7mm")
 		(property "Reference" "U10"
-			(at 0 1.5 90)
+			(at 4.82325 -0.01 0)
 			(layer "B.SilkS")
 			(uuid "1ba238c0-c016-4d4f-bf1a-f7a02fddbda7")
 			(effects
@@ -38592,14 +38592,14 @@
 		(uuid "da07aacd-9e58-40fe-b10a-3363703d8745")
 		(at 15.475 46.425 -90)
 		(property "Reference" "SW2"
-			(at 5.4 0 90)
+			(at 5.32325 1 0)
 			(unlocked yes)
 			(layer "B.SilkS")
 			(uuid "d63f9446-a0b4-4fce-b736-1bf3ca1c141b")
 			(effects
 				(font
 					(size 1 1)
-					(thickness 0.1)
+					(thickness 0.15)
 				)
 				(justify mirror)
 			)
