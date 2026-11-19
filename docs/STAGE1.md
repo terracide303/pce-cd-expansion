@@ -129,6 +129,14 @@ caught a real generator bug: resistors placed 7.62 mm apart touched pins and mer
 ## 7. What happens next
 
 1. **Schematic review** (you, in KiCad): open `hw/stage1/pce_exp_stage1.kicad_pro`.
-2. **Layout** via PCB HERO: a small 2-layer board, Tang Nano 20K on sockets,
-   the 3×23 header at the edge.
-3. **The FPGA image**: a RAM responder with a test HuCard program.
+   The Tang is one part (A1) with one footprint, so its two header rows are fixed
+   20.32 mm apart: measured from the MiSTeryShield20k RPi Pico's TangNano-20K
+   footprint and the Sipeed drawing, which also confirmed all 34 I/O positions.
+2. **Placement** (you): the PCB already has every footprint and net, staged
+   beside the board (KiCad schematic parity: 0 differences). See
+   [PLACEMENT_BRIEF.md](PLACEMENT_BRIEF.md). Built by
+   `tools/make_stage1_pcb.py` (run it with KiCad's Python), which also writes the
+   design rules, the project rules and `board.json`; PCB HERO's
+   `scripts/check_board.py hw/stage1 --selftest` passes.
+3. **Routing** via PCB HERO, after placement.
+4. **The FPGA image**: a RAM responder with a test HuCard program.

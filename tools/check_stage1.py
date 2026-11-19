@@ -99,8 +99,7 @@ def check_rules(actual):
 
     # The Tang headers, from the header CSV.
     for r in csv.DictReader(open(ROOT / "docs" / "tang_nano_20k_header.csv", encoding="utf-8")):
-        ref = "J2" if r["header_pos"].startswith("L") else "J3"
-        got = on(ref, r["header_pos"][1:])
+        got = on("A1", r["header_pos"])
         tag = f"TANG {r['header_pos']} ({r['io_name']} {r['fpga_pin']})"
         if r["io_name"] == "5V":
             check(got is None, f"{tag}: the Tang's USB 5 V must not connect to anything, is on {got}")
@@ -118,12 +117,12 @@ def check_rules(actual):
         refs = {r for r, _ in nodes}
         if net == "GND":
             continue          # the one net that must be shared: the two boards' common ground
-        check(not ({"J2", "J3"} & refs and "J1" in refs), f"5V->FPGA: net {net} joins the console port straight to the Tang")
+        check(not ("A1" in refs and "J1" in refs), f"5V->FPGA: net {net} joins the console port straight to the Tang")
 
     # Every FPGA net is point to point: one Tang pin and one driver/resistor.
     for net, nodes in by_net.items():
         if net.startswith("F_"):
-            tang = [n for n in nodes if n[0] in ("J2", "J3")]
+            tang = [n for n in nodes if n[0] == "A1"]
             check(len(tang) == 1 and len(nodes) == 2, f"F-NET {net}: expected one Tang pin + one translator/resistor pin, got {nodes}")
 
     # Supplies.
@@ -194,9 +193,9 @@ def selftest(actual):
         ("two nets merged by touching pins (F_D0 + T_D1)", lambda a: merge(a, "F_D0", "T_D1")),
         ("data translator VCCA on 3.3 V", lambda a: a.update({("U2", "1"): "+3V3"})),
         ("an input translator turned round (DIR low)", lambda a: a.update({("U3", "1"): "GND"})),
-        ("a 5 V bus line wired straight to the Tang", lambda a: a.update({("J3", "5"): "BUS_A0"})),
-        ("a kept pin used (WS2812 pin 79)", lambda a: a.update({("J3", "14"): "F_A0"})),
-        ("the Tang's USB 5 V tied to +5VA", lambda a: a.update({("J3", "1"): "+5VA"})),
+        ("a 5 V bus line wired straight to the Tang", lambda a: a.update({("A1", "R5"): "BUS_A0"})),
+        ("a kept pin used (WS2812 pin 79)", lambda a: a.update({("A1", "R14"): "F_A0"})),
+        ("the Tang's USB 5 V tied to +5VA", lambda a: a.update({("A1", "R1"): "+5VA"})),
         ("decoder looking at the wrong address line", lambda a: a.update({("U1", "11"): "BUS_A15"})),
         ("an unused translator input left floating", lambda a: a.update({("U5", "9"): None})),
     ]

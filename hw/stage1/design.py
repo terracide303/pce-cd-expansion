@@ -34,7 +34,7 @@ def bus_net(signal):
 EXT_BUS = list(csv.DictReader(open(ROOT / "docs" / "ext_bus_pinout.csv", encoding="utf-8")))
 J1_PINS = {r["pin"]: bus_net(r["signal"]) for r in EXT_BUS}
 
-# ---------------------------------------------------------------- the Tang Nano 20K headers (J2 left, J3 right)
+# ---------------------------------------------------------------- the Tang Nano 20K (A1)
 # FPGA pin -> net. Data on "free" pins (bidirectional, nothing else on them);
 # address on LED / amp / EDID pins (inputs only, harmless); A13-A15 on three
 # BL616 lines that are UNVERIFIED (docs/STAGE1.md: 8 KB until test T5 passes).
@@ -60,8 +60,9 @@ def header_net(row):
     return FPGA.get(int(row["fpga_pin"]))
 
 
-J2_PINS = {r["header_pos"][1:]: header_net(r) for r in HEADER if r["header_pos"].startswith("L")}
-J3_PINS = {r["header_pos"][1:]: header_net(r) for r in HEADER if r["header_pos"].startswith("R")}
+# One part for the whole module, pins named by header position (L1..L20, R1..R20),
+# so the 20.32 mm row spacing lives in one footprint and can't drift at layout.
+A1_PINS = {r["header_pos"]: header_net(r) for r in HEADER}
 
 # ---------------------------------------------------------------- the chips
 # U1 74HCT688: P=R goes low when A20..A16 = 1 0000 (banks $80-$87). 5 V side.
@@ -100,10 +101,8 @@ U5 = lvc245(["BUS_RD_N", "BUS_WR_N", "SEL_N", "GND", "GND", "GND", "GND", "GND"]
 PARTS = [
     dict(ref="J1", sym="pce_exp:PCE_EXT_BUS", value="PCE EXT BUS (3x23 female)",
          fp="pce_exp:PinSocket_3x23_P2.54mm_Vertical", pins=J1_PINS),
-    dict(ref="J2", sym="pce_exp:TANG_NANO_20K_LEFT", value="Tang Nano 20K left header",
-         fp="Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical", pins=J2_PINS),
-    dict(ref="J3", sym="pce_exp:TANG_NANO_20K_RIGHT", value="Tang Nano 20K right header",
-         fp="Connector_PinSocket_2.54mm:PinSocket_1x20_P2.54mm_Vertical", pins=J3_PINS),
+    dict(ref="A1", sym="pce_exp:TANG_NANO_20K", value="Tang Nano 20K (on 2x 1x20 female headers)",
+         fp="pce_exp:TangNano20K_Sockets", pins=A1_PINS),
     dict(ref="U1", sym="74xx:74HCT688", value="74HCT688", fp="Package_SO:SOIC-20W_7.5x12.8mm_P1.27mm", pins=U1),
     dict(ref="U2", sym="Logic_LevelTranslator:SN74LVC8T245", value="SN74LVC8T245",
          fp="Package_SO:TSSOP-24_4.4x7.8mm_P0.65mm", pins=U2),

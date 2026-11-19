@@ -118,10 +118,10 @@ def build_custom_lib():
     b = [(r["pin"], r["signal"]) for r in ext if r["row"] == "b"]
     c = [(r["pin"], r["signal"]) for r in ext if r["row"] == "c"]
     syms = [box_symbol("PCE_EXT_BUS", "J", "PCE EXT BUS", a + b, c, width=25.4)]
-    for side, name in [("L", "TANG_NANO_20K_LEFT"), ("R", "TANG_NANO_20K_RIGHT")]:
-        rows = [r for r in design.HEADER if r["header_pos"].startswith(side)]
-        pins = [(r["header_pos"][1:], (f'{r["fpga_pin"]} {r["io_name"]}' if r["fpga_pin"] else r["io_name"])) for r in rows]
-        syms.append(box_symbol(name, "J", name.replace("_", " ").title(), pins if side == "L" else [], pins if side == "R" else [], width=33.02))
+    label = lambda r: f'{r["fpga_pin"]} {r["io_name"]}' if r["fpga_pin"] else r["io_name"]
+    left = [(r["header_pos"], label(r)) for r in design.HEADER if r["header_pos"].startswith("L")]
+    right = [(r["header_pos"], label(r)) for r in design.HEADER if r["header_pos"].startswith("R")]
+    syms.append(box_symbol("TANG_NANO_20K", "A", "Tang Nano 20K", left, right, width=40.64))
     return '(kicad_symbol_lib (version 20241209) (generator "pce_exp_gen")\n' + "".join(syms) + ")\n"
 
 
@@ -160,12 +160,50 @@ def port_footprint():
             + out + pads + ")\n")
 
 
+def tang_footprint():
+    """Two 1x20 female header rows 20.32 mm (0.8") apart, pads L1..L20 / R1..R20.
+    Spacing from the MiSTeryShield20k RPi Pico's TangNano-20K footprint (pads at x = +-10.16 mm),
+    which agrees with the Sipeed drawing (~20.35 mm measured) and with our header CSV on all 34 I/Os.
+    Module outline 54.04 x 22.55 mm (Sipeed datasheet p.6). L1 / R1 are the USB-C end."""
+    pitch, rows = 2.54, 20.32
+    span = 19 * pitch
+    end = (54.04 - span) / 2
+    pads = ""
+    for side, x in (("L", 0.0), ("R", rows)):
+        for n in range(1, 21):
+            shape = "rect" if (side, n) == ("L", 1) else "oval"
+            pads += (f'\t(pad "{side}{n}" thru_hole {shape} (at {fmt(x)} {fmt((n - 1) * pitch)}) (size 1.7 1.7) (drill 1)\n'
+                     f'\t\t(layers "*.Cu" "*.Mask") (uuid "{uid("tfp", side, n)}"))\n')
+    x0, x1 = rows / 2 - 22.55 / 2, rows / 2 + 22.55 / 2
+    y0, y1 = -end, span + end
+
+    def rect(layer, wd, grow):
+        out = ""
+        for a, b, c, d in [(x0 - grow, y0 - grow, x1 + grow, y0 - grow), (x1 + grow, y0 - grow, x1 + grow, y1 + grow),
+                           (x1 + grow, y1 + grow, x0 - grow, y1 + grow), (x0 - grow, y1 + grow, x0 - grow, y0 - grow)]:
+            out += (f'\t(fp_line (start {fmt(a)} {fmt(b)}) (end {fmt(c)} {fmt(d)}) (stroke (width {wd}) (type solid)) '
+                    f'(layer "{layer}") (uuid "{uid("tfl", layer, a, b, c, d)}"))\n')
+        return out
+
+    def txt(kind, s, x, y, layer):
+        k = kind if kind in ("reference", "value") else "user"
+        return (f'\t(fp_text {k} "{s}" (at {fmt(x)} {fmt(y)}) (layer "{layer}") (uuid "{uid("tft", kind, s)}")\n'
+                f'\t\t(effects (font (size 1 1) (thickness 0.15))))\n')
+
+    return ('(footprint "TangNano20K_Sockets" (version 20240108) (generator "pce_exp_gen") (layer "F.Cu")\n'
+            '\t(descr "Sipeed Tang Nano 20K on two 1x20 2.54 mm female headers, rows 20.32 mm apart; pads by header position '
+            'L1..R20; outline 54.04 x 22.55 mm; L1/R1 at the USB-C end")\n\t(attr through_hole)\n'
+            + txt("reference", "REF**", rows / 2, -end - 1.5, "F.SilkS") + txt("value", "TangNano20K", rows / 2, span / 2, "F.Fab")
+            + txt("user", "USB-C", rows / 2, -end + 1.2, "F.SilkS")
+            + rect("F.SilkS", 0.12, 0.1) + rect("F.CrtYd", 0.05, 0.5) + rect("F.Fab", 0.1, 0) + pads + ")\n")
+
+
 # ---------------------------------------------------------------- placement (mm, A3 landscape)
 
 PLACE = {
     "J1": (45.72, 152.4), "U1": (124.46, 63.5), "U2": (124.46, 144.78),
     "U3": (210.82, 63.5), "U4": (210.82, 132.08), "U5": (210.82, 200.66),
-    "J2": (312.42, 88.9), "J3": (373.38, 88.9),
+    "A1": (345.44, 88.9),
 }
 for i in range(8):
     PLACE[f"R{i + 1}"] = (254.0 + i * 10.16, 162.56)   # side by side: each one's labels get their own column
@@ -187,6 +225,7 @@ def main():
     (OUT / "pce_exp.kicad_sym").write_text(CUSTOM_LIB, encoding="utf-8")
     (OUT / "pce_exp.pretty").mkdir(exist_ok=True)
     (OUT / "pce_exp.pretty" / "PinSocket_3x23_P2.54mm_Vertical.kicad_mod").write_text(port_footprint(), encoding="utf-8")
+    (OUT / "pce_exp.pretty" / "TangNano20K_Sockets.kicad_mod").write_text(tang_footprint(), encoding="utf-8")
     (OUT / "sym-lib-table").write_text('(sym_lib_table (version 7)\n  (lib (name "pce_exp")(type "KiCad")(uri "${KIPRJMOD}/pce_exp.kicad_sym")(options "")(descr "PCE CD expansion"))\n)\n', encoding="utf-8")
     (OUT / "fp-lib-table").write_text('(fp_lib_table (version 7)\n  (lib (name "pce_exp")(type "KiCad")(uri "${KIPRJMOD}/pce_exp.pretty")(options "")(descr "PCE CD expansion"))\n)\n', encoding="utf-8")
 
@@ -215,7 +254,7 @@ def main():
                           for k, v, x, y, h in props)
         pin_sx_ = "".join(f'\t\t(pin "{esc(n)}" (uuid "{uid(ref, "pin", n)}"))\n' for n in pm)
         items.append(f'\t(symbol (lib_id "{p["sym"]}") (at {fmt(X)} {fmt(Y)} 0) (unit 1)\n'
-                     f'\t\t(exclude_from_sim no) (in_bom {"no" if ref.startswith("#") else "yes"}) (on_board {"no" if ref.startswith("#") else "yes"}) (dnp no)\n'
+                     f'\t\t(exclude_from_sim no) (in_bom {"no" if ref.startswith(("#", "TP")) else "yes"}) (on_board {"no" if ref.startswith("#") else "yes"}) (dnp no)\n'
                      f'\t\t(uuid "{uid(ref)}")\n{prop_sx}{pin_sx_}'
                      f'\t\t(instances (project "{PROJECT}" (path "/{sheet}" (reference "{esc(ref)}") (unit 1))))\n\t)\n')
         for n, (px, py, rot) in pm.items():

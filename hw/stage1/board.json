@@ -1,0 +1,16 @@
+{
+  "_comment": "Read by PCB HERO's scripts/check_board.py. Fab floor from KiCadRoutingTools fab_tiers.py (2-layer standard). No BGA and no differential pairs on this board.",
+  "fab": {
+    "name": "JLCPCB 2-layer standard",
+    "track": 0.127,
+    "clearance": 0.127,
+    "via_hole": 0.2,
+    "via_dia": 0.45,
+    "hole_to_hole": 0.2,
+    "edge": 0.2
+  },
+  "bga": [],
+  "diff_classes": [],
+  "min_custom_rules": 5,
+  "ignore_pairlike": []
+}

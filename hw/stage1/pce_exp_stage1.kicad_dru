@@ -1,0 +1,38 @@
+# Stage 1 RAM responder: custom design rules
+#
+# FAB: JLCPCB 2-layer standard (KiCadRoutingTools py_router/fab_tiers.py, 2-layer standard tier):
+#   track/space 0.127/0.127 mm, via 0.45/0.2 mm,
+#   hole-to-hole 0.2 mm, copper to edge 0.2 mm.
+# We draw well above it (PCB HERO playbook phase 3). The bus is 7.16 MHz with
+# fast logic edges: no impedance classes, but keep traces short and over ground.
+#
+# THE RULE NO DRC CAN CHECK: on a 2-layer board, pour GND on the bottom and keep
+# it unbroken under the data and address lines between the port and the
+# translators. Look at it before ordering.
+
+(version 1)
+
+(rule "minimum track width"
+	(constraint track_width (min 0.25mm))
+	(severity error))
+
+(rule "minimum clearance"
+	(constraint clearance (min 0.2mm))
+	(severity error))
+
+(rule "minimum via"
+	(constraint via_diameter (min 0.6mm))
+	(constraint hole_size (min 0.3mm))
+	(severity error))
+
+(rule "hole to hole"
+	(constraint hole_to_hole (min 0.5mm))
+	(severity error))
+
+(rule "copper to board edge"
+	(constraint edge_clearance (min 0.5mm))
+	(severity error))
+
+(rule "power track width"
+	(constraint track_width (min 0.5mm))
+	(condition "A.NetClass == 'Power'"))
