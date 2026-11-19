@@ -61,11 +61,12 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 ## 3. Missing: what blocks ordering the carrier
 
-1. **The FPGA module is undecided.** Stage 1 fits 24 safe pins; the flash-cart role
-   needs ~20 address lines (~30–33 pins). Options: a bigger module (EverDrive uses a
-   Cyclone IV with two PSRAMs), an external address latch (tight: ~90 ns budget), or
-   dropping the flash-cart role. **This decides the carrier's footprint**, so it
-   comes before any PCB.
+1. **The FPGA module is undecided, and it is decided by the BIOS, not the flash cart.**
+   A 256 KB BIOS is fetched linearly, so it needs A0–A17: 18 + 8 data + 2 strobes =
+   **28 pins against 24 safe**. The 20K cannot boot a BIOS unaided. Options: a module
+   with more I/O, the same GW2AR-18 chip on our own board (the module exposes only 34
+   of an 88-pin package), or three address latches with a ~90 ns timing budget.
+   **This decides the carrier's footprint**, so it comes before any PCB.
 2. **T1c, T1d, T3 and T5 have not been run**, and they need only a console, a meter,
    a scope and a real HuCard. They do not block the design; they block confidence.
 3. **Does a working console with a HuCard exist on the bench?** Everything above
@@ -109,10 +110,14 @@ The register map is a *shape*, not a *specification*. What nobody has written do
   to go through the card edge. Undecided: which DAC, and where the sound comes out
   — a jack on the carrier, an EDFX-style port board, or HDMI. This affects the
   carrier's connectors, so it is close to the module decision in urgency.
-- **Media access, a mechanical trap**: the Tang Nano 20K's microSD is on its
-  *underside*, which faces the console once the card is in the slot. So the disc
-  images cannot live on the module's own SD slot in the final device: the carrier
-  needs its own socket, or a USB-C link, or the BL616 companion. Nobody has decided.
+- **Media access — corrected, and not the trap I first wrote.** The Tang Nano 20K's
+  microSD is wired **to the FPGA** (4-bit SDIO on I/O 80–85, per PCEHeroTN's own
+  constraints), so BIOS images and disc images both live there and cost the carrier
+  **zero pins**. It sits at the module's far end, which is the part that sticks out of
+  the console, so it stays reachable. Two real constraints remain: those six FPGA I/O
+  are spent, and the carrier must keep that end of the module clear of copper and
+  parts. What *does* bite is the address width for presenting the BIOS at all —
+  [STAGE1-CARD.md](STAGE1-CARD.md) §7.
 - **Licence**: the repo has none. The CD reference (`cd.vhd`) is GPL; using it as a
   *specification to read* is prudent, porting it is not, and that line needs writing
   down while it is still cheap.

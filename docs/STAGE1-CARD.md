@@ -217,10 +217,41 @@ problem — 2 MB of Arcade Card RAM plus 256 KB of CD RAM plus a BIOS fits in th
 | **an external address latch** (3× 74LVC574, latched on /RD falling, read back over 8 pins) | the FPGA loses the address→/RD window and is left ~90 ns (140 ns cycle − 47 ns to /RD) to fetch from SDRAM: tight, and it needs a new timing proof |
 | **8 KB banked window only** | works for mapper games, breaks plain linear cards: not acceptable |
 
+### What a BIOS costs in pins — the real reason the module decision cannot wait
+
+Stage 1a fits 25 pins only because its ROM is **8 KB**: 13 address lines. Now count
+what the device must do *first*, before any CD logic:
+
+- a **System Card / Super System Card BIOS is 256 KB**, and the CPU fetches it
+  **linearly** across `$000000–$03FFFF` — there is no banking to hide behind, because
+  the address the CPU puts out *is* the ROM offset (`huc_ssc` in
+  [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §4 decodes it exactly that
+  way);
+- 256 KB needs **A0–A17**, i.e. 18 pins, plus 8 data, plus /RD and /WR = **28**, before
+  a single select. That is already **four more than the 24 safe pins**, and there is
+  no version of this board that boots a BIOS on a 20K without help.
+
+So the flash-cart role was never the thing that forced the module choice; **booting a
+BIOS from the SD card forces it**, and that is stage 2's first minute.
+
+The three ways out, honestly priced:
+
+| option | what it costs |
+|---|---|
+| **a module with more I/O** (Tang Primer 20K, Mega 60K, …) | count the usable pins from its own pinout before committing; a different module means a different carrier footprint |
+| **the same chip on our own board** — the 20K's GW2AR-LV18 is an 88-pin package and the module only exposes 34 of its I/O | this is what the shipping product does (custom FPGA, 6 layers); it needs a fine-pitch BGA/QFN assembly and a second design, but it ends the pin argument for good |
+| **20K + address latches** (3× 74LVC574, latched on /RD falling) | the FPGA loses the address→/RD window and is left ~90 ns to fetch; needs its own timing proof, and it is the only option that keeps the 20K |
+
+**The SD card is free, though.** The Tang Nano 20K's microSD is wired **to the FPGA**
+(4-bit SDIO: `sd_sclk`, `sd_cmd`, `sd_dat[0..3]` on I/O 80–85, per PCEHeroTN's own
+constraints), so neither the BIOS file nor a disc image costs the carrier a single
+pin. It does consume those six FPGA I/O, which is why [STAGE1.md](STAGE1.md) §2 already
+lists some of them as "kept".
+
 **Recommendation:** build stage 1a on the 20K as a bench proof, wired by hand on a
-carrier prototype; and settle the module question in §7 *before* the product
-carrier is laid out. The 24-pin stage-1 board is deliberately the smallest thing
-that answers the only question that can kill the project.
+carrier prototype; and settle the module question *before* the product carrier is laid
+out. The 24-pin stage-1 board is deliberately the smallest thing that answers the only
+question that can kill the project.
 
 ## 8. Test plan changes
 
