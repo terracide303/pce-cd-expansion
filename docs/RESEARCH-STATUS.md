@@ -61,7 +61,23 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 ## 3. Missing: what blocks ordering the carrier
 
-1. **The FPGA module is undecided, and it is decided by the BIOS, not the flash cart.**
+1. **Superseded the same day (owner): the core moves to a Lattice ECP5, LFE5U-45F in
+   CABGA256, soldered directly on the card.** Inspiration board:
+   [cheyao/icepi-zero](https://github.com/cheyao/icepi-zero) (ECP5 25F, same package,
+   Solderpad Hardware v2.1 = Apache-2.0 compatible, KiCad sources). Details and
+   consequences: [FPGA-ECP5.md](FPGA-ECP5.md). The Tang decision below is kept for
+   the record and still covers board A as a bench test.
+
+   **Earlier 2026-11-19 (owner): the Tang Nano 20K stays.** Bigger modules cost too
+   much, and the owner's core (PCEHeroTN) targets only its GW2AR-18. The pin shortage
+   below is therefore solved on the carrier (board B's SRAM, latches or a CPLD), not by
+   a bigger FPGA. Later option, same chip, so the core still fits: a GW2AR-18 soldered
+   directly on the card for more pins (fine pitch, fab-assembled). The analysis that
+   led here, kept for the record:
+   **The FPGA module was undecided, and it is decided by the BIOS, not the flash cart.**
+   Size budget (owner's decision 2026-11-19, [STAGE1-CARD.md](STAGE1-CARD.md) §1):
+   the card may stick out of the console by 9 mm, outline at most 54.1 × 94.4 mm,
+   so a module must fit **~54 × 75 mm** — or the FPGA goes directly on the card.
    A 256 KB BIOS is fetched linearly, so it needs A0–A17: 18 + 8 data + 2 strobes =
    **28 pins against 24 safe** — and 22–28 in practice, since the module's SD takes six
    header I/O. The FPGA is a fixed dev-board module (no bare-chip option), so the way
@@ -97,10 +113,12 @@ The register map is a *shape*, not a *specification*. What nobody has written do
 - **A contradiction in our own docs to resolve**: [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md)
   says the register block is `$1FF800–$1FF8FF` (256 bytes) while
   [SOURCES_REVIEW.md](SOURCES_REVIEW.md), quoting the HuC6280 manual, says
-  `$1FF800–$1FFBFF` (1 KB, "reserved for extension"). And `$1FF8C0–C7` is answered
-  by **both** the CD unit's signature and the Super System Card — so on real
-  hardware two devices could drive the same read; who wins when both are present is
-  unknown (moot for us, not for anyone with a real CD unit).
+  `$1FF800–$1FFBFF` (1 KB, "reserved for extension"). The core decodes 256 bytes;
+  a board decoding the full 1 KB loses nothing. On `$1FF8C0–C7`: the MiSTer core
+  answers it from `cd.vhd`, but that core emulates the CD unit *and* the Super System
+  Card in one block, so it is not evidence that a real CD unit answers there. The
+  EverDrive puts it in the card (`huc_ssc.sv`). **Most likely only the card answers**;
+  a logic analyser on a real CD unit without an SSC settles it.
 - **Arcade Card**: "supported" by the shipping product, 2 MB of RAM, and *nothing*
   in our docs — not even its registers.
 - **Save states and backup-RAM persistence**: the lock/unlock semantics are in

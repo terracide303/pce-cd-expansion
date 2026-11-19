@@ -7,3 +7,5 @@ fp-info-cache
 _autosave-*
 impl/
 fpga_build.log
+hw/card/*.kicad_prl
+hw/card/*-backups/

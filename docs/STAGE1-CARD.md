@@ -12,9 +12,9 @@ RAM at bank `$80` and reads it back.
 program, so the test needs no flash HuCard, no System Card, no console opening and
 no second device. It plugs into the slot and reports on screen.
 
-Status: **design, nothing ordered.** The card edge's pinout is from one source
-(`docs/hucard_pinout.csv`, parsed by `tools/hucard_bus.py` from the committed
-wiki text) — TEST_PLAN T1c is the second source.
+Status: **design, nothing ordered.** The card edge's pinout is from two sources
+(`docs/hucard_pinout.csv`, by `tools/hucard_bus.py`: the committed wiki text against
+the console schematic's CN202, all 38 pins agree) — TEST_PLAN T1c is the physical check.
 
 ---
 
@@ -75,6 +75,34 @@ Consequences for the carrier:
   console in the loop — and even then it needs a jig PCB built around it first.
   The repro-HuCard world needs a slot because it flashes a TSOP; this board never
   writes to the bus side.
+
+### Decision (2026-11-19): the card may be longer than a HuCard
+
+The owner's call: **the card does not have to be HuCard-sized.** Only the part that
+goes into the slot has to match a real card; the rest may stick out of the console,
+**by up to 9 mm**: the outline is at most **54.1 × 94.4 mm** (85.4 + 9).
+
+| part of the card | constraint |
+|---|---|
+| the slot end: fingers, bevel, thickness, the first **8.6 mm** | **exact**, per the table above |
+| the width inside the slot opening | **54.1 mm**, the card's own width, or it won't go in |
+| length | **at most 94.4 mm**: a HuCard's 85.4 mm plus 9 mm sticking out of the console |
+| width outside the console | free in principle; keep 54.1 mm until T1d shows the slot surround |
+
+What to check on the real console before drawing the outline (add to T1d): what the
+**power switch's card lock** reaches on a real HuCard (a PC Engine locks the card
+while it is on), and where the console's front lip is, so the wider part (if any)
+starts after both.
+
+What it changes, with numbers: the rotated Tang Nano 20K layout below used 72.6 of
+85.4 mm; at 94.4 mm there are **21.8 mm** spare along the card and 31 mm beside the
+Tang. Room for an SRAM, an SD socket and an audio DAC, but **not for a much bigger
+plug-in module**: any module must fit the 54.1 mm width with 8.6 mm + ~10 mm of
+fingers and translators in front of it, i.e. at most **~54 × 75 mm**. A larger
+FPGA therefore means either a module that small or the FPGA soldered directly on the
+card, as the EverDrive does. The module decision
+([RESEARCH-STATUS.md](RESEARCH-STATUS.md) §3) is about pins, price **and that
+footprint**.
 
 ### Does the Tang even fit on a card?
 

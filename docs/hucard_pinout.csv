@@ -1,39 +1,39 @@
-pin,signal,card_direction,wiki_text,note
-1,/CD,out,/CD,card detect: grounded by a HuCard; on the rear port it is /CARD (c3)
-2,AUDIO_IN,out,AUDIO IN,"mono, mixed into both console channels -- no stereo on this connector"
-3,A19,in,CPU PA19,
-4,A16,in,CPU PA16,
-5,A15,in,CPU PA15,
-6,A12,in,CPU PA12,
-7,A7,in,CPU PA7,
-8,A6,in,CPU PA6,
-9,A5,in,CPU PA5,
-10,A4,in,CPU PA4,
-11,A3,in,CPU PA3,
-12,A2,in,CPU PA2,
-13,A1,in,CPU PA1,
-14,A0,in,CPU PA0,
-15,D0,inout,CPU D0 (PCE) or D7 (TG16),
-16,D1,inout,CPU D1 (PCE) or D6 (TG16),
-17,D2,inout,CPU D2 (PCE) or D5 (TG16),
-18,GND,power,GND,the only ground on the connector
-19,D3,inout,CPU D3 (PCE) or D4 (TG16),
-20,D4,inout,CPU D4 (PCE) or D3 (TG16),
-21,D5,inout,CPU D5 (PCE) or D2 (TG16),
-22,D6,inout,CPU D6 (PCE) or D1 (TG16),
-23,D7,inout,CPU D7 (PCE) or D0 (TG16),
-24,A20,in,CPU PA20,
-25,A10,in,CPU PA10,
-26,/RD,in,CPU /RD,
-27,A11,in,CPU PA11,
-28,A9,in,CPU PA9,
-29,A8,in,CPU PA8,
-30,A13,in,CPU PA13,
-31,A14,in,CPU PA14,
-32,A17,in,CPU PA17,
-33,A18,in,CPU PA18,
-34,/WR,in,CPU /WR,
-35,HSM,in,HSM,"high speed mode, asserted by the CPU at 7.16 MHz"
-36,/RST,in,/RST,
-37,/IRQ2,out,/IRQ2,the card can raise IRQ2 (open drain on the console side)
-38,+5V,power,+5V,"a real digital supply, unlike the rear port's +5A"
+pin,signal,card_direction,wiki_text,note,schematic_name
+1,/CD,out,/CD,card detect: grounded by a HuCard; on the rear port it is /CARD (c3),XCHECK
+2,AUDIO_IN,out,AUDIO IN,"mono, mixed into both console channels -- no stereo on this connector",AUDIO-C
+3,A19,in,CPU PA19,,A19
+4,A16,in,CPU PA16,,A16
+5,A15,in,CPU PA15,,A15
+6,A12,in,CPU PA12,,A12
+7,A7,in,CPU PA7,,A7
+8,A6,in,CPU PA6,,A6
+9,A5,in,CPU PA5,,A5
+10,A4,in,CPU PA4,,A4
+11,A3,in,CPU PA3,,A3
+12,A2,in,CPU PA2,,A2
+13,A1,in,CPU PA1,,A1
+14,A0,in,CPU PA0,,A0
+15,D0,inout,CPU D0 (PCE) or D7 (TG16),,D0
+16,D1,inout,CPU D1 (PCE) or D6 (TG16),,D1
+17,D2,inout,CPU D2 (PCE) or D5 (TG16),,D2
+18,GND,power,GND,the only ground on the connector,GND
+19,D3,inout,CPU D3 (PCE) or D4 (TG16),,D3
+20,D4,inout,CPU D4 (PCE) or D3 (TG16),,D4
+21,D5,inout,CPU D5 (PCE) or D2 (TG16),,D5
+22,D6,inout,CPU D6 (PCE) or D1 (TG16),,D6
+23,D7,inout,CPU D7 (PCE) or D0 (TG16),,D7
+24,A20,in,CPU PA20,,XCE
+25,A10,in,CPU PA10,,A10
+26,/RD,in,CPU /RD,,RD
+27,A11,in,CPU PA11,,A11
+28,A9,in,CPU PA9,,A9
+29,A8,in,CPU PA8,,A8
+30,A13,in,CPU PA13,,A13
+31,A14,in,CPU PA14,,A14
+32,A17,in,CPU PA17,,A17
+33,A18,in,CPU PA18,,A18
+34,/WR,in,CPU /WR,,WR
+35,HSM,in,HSM,"high speed mode, asserted by the CPU at 7.16 MHz",HSM
+36,/RST,in,/RST,,XRESET
+37,/IRQ2,out,/IRQ2,the card can raise IRQ2 (open drain on the console side),XIRQ2
+38,+5V,power,+5V,"a real digital supply, unlike the rear port's +5A",+5V
