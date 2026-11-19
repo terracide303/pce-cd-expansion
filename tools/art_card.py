@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Silkscreen artwork: the card's name, the maker, a CD and speed stripes.
+"""Silkscreen artwork on the FRONT: what the card is, and who made it.
 
     "C:/Users/terra/AppData/Local/Programs/KiCad/10.0/bin/python.exe" tools/art_card.py
 
-Original artwork in a retro console style (not NEC's PC Engine logo, which is a
-trademark). KiCad's built-in stroke font only, so the board needs no installed
-fonts and the gerbers come out the same on every machine. Everything is put in a
-group called "art" on the silkscreen; running again replaces it.
+    PC Engine / TurboGrafx
+    CD-ROM²            (the 2 is a separate, smaller, raised text)
+    TERRACIDE303
+    rev 0.1 · 2026
 
-Back: the big panel in the free area beside the FPGA core. Front: a one-line credit.
-Run after tools/silk_card.py, then look at the render.
+Placed in the free strip between the SDRAM and the test points. The console names
+are a compatibility statement, not a logo. KiCad's built-in stroke font only, so the
+board needs no installed fonts and the gerbers come out the same on every machine.
+Everything is in a group called "art"; running again replaces it. Run after
+tools/silk_card.py, then look at the render and run DRC.
 """
 import math, pathlib
 
@@ -44,83 +47,45 @@ def main():
         board.Add(item)
         group.AddItem(item)
 
-    # ---- back panel. Designed as seen FROM THE BACK, where left and right swap:
-    # a point at view-x v lands at board x = W - v. Texts are mirrored so they read.
-    back = pcbnew.B_SilkS
+    front = pcbnew.F_SilkS
 
-    def bx(v):
-        return W - v
+    def text(s, x, y, h, stroke, italic=False, bold_stroke=None):
+        tx = pcbnew.PCB_TEXT(board)
+        tx.SetText(s)
+        tx.SetLayer(front)
+        tx.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(h), pcbnew.FromMM(h)))
+        tx.SetTextThickness(pcbnew.FromMM(stroke))
+        tx.SetItalic(italic)
+        tx.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+        tx.SetPosition(mm(x, y))
+        add(tx)
+        return tx
 
-    def text(s, v, y, h, stroke, layer=back, italic=True, angle=0, mirror=True):
-        t = pcbnew.PCB_TEXT(board)
-        t.SetText(s)
-        t.SetLayer(layer)
-        t.SetTextSize(pcbnew.VECTOR2I(pcbnew.FromMM(h), pcbnew.FromMM(h)))
-        t.SetTextThickness(pcbnew.FromMM(stroke))
-        t.SetItalic(italic)
-        t.SetMirrored(mirror)
-        t.SetTextAngleDegrees(angle)
-        t.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
-        t.SetPosition(mm(bx(v) if layer == back else v, y))
-        add(t)
+    def line(x0, y0, x1, y1, w):
+        sh = pcbnew.PCB_SHAPE(board)
+        sh.SetShape(pcbnew.SHAPE_T_SEGMENT)
+        sh.SetStart(mm(x0, y0))
+        sh.SetEnd(mm(x1, y1))
+        sh.SetWidth(pcbnew.FromMM(w))
+        sh.SetLayer(front)
+        add(sh)
 
-    def circle(v, y, r, width, filled=False):
-        c = pcbnew.PCB_SHAPE(board)
-        c.SetShape(pcbnew.SHAPE_T_CIRCLE)
-        c.SetCenter(mm(bx(v), y))
-        c.SetEnd(mm(bx(v) + r, y))
-        c.SetWidth(pcbnew.FromMM(width))
-        c.SetFilled(filled)
-        c.SetLayer(back)
-        add(c)
-
-    def arc(v, y, r, a0, a1, width):
-        a = pcbnew.PCB_SHAPE(board)
-        a.SetShape(pcbnew.SHAPE_T_ARC)
-        pts = [(v + r * math.cos(math.radians(t)), y - r * math.sin(math.radians(t))) for t in (a0, (a0 + a1) / 2, a1)]
-        a.SetArcGeometry(mm(bx(pts[0][0]), pts[0][1]), mm(bx(pts[1][0]), pts[1][1]), mm(bx(pts[2][0]), pts[2][1]))
-        a.SetWidth(pcbnew.FromMM(width))
-        a.SetLayer(back)
-        add(a)
-
-    def poly(points):
-        p = pcbnew.PCB_SHAPE(board)
-        p.SetShape(pcbnew.SHAPE_T_POLY)
-        p.SetPolyPoints([mm(bx(v), y) for v, y in points])
-        p.SetFilled(True)
-        p.SetWidth(pcbnew.FromMM(0.1))
-        p.SetLayer(back)
-        add(p)
-
-    # panel: view-x 3..29 (the board's free right column seen from the back), y 18..74
-    cx = 15.5
-    # the disc
-    circle(cx, 30.0, 8.6, 0.45)
-    circle(cx, 30.0, 2.6, 0.7)
-    circle(cx, 30.0, 0.9, 0.3)
-    for r, a0, a1 in [(4.4, 25, 75), (6.0, 30, 70), (7.3, 35, 62), (4.4, 205, 255), (6.0, 210, 250)]:
-        arc(cx, 30.0, r, a0, a1, 0.35)
-    # speed stripes, leaning like the lettering, longest first
-    y = 41.2
-    for i, length in enumerate([22.0, 18.0, 14.0, 10.0]):
-        x0 = cx - 11.0 + i * 1.2
-        h, lean = 0.7, 0.5
-        poly([(x0 + lean, y), (x0 + length + lean, y), (x0 + length, y + h), (x0, y + h)])
-        y += 1.25
-    # the name
-    text("PCE", cx, 51.5, 6.5, 1.1)
-    text("CD EXPANSION", cx, 57.0, 2.2, 0.35)
-    # underline bar
-    poly([(cx - 11.4, 59.4), (cx + 11.6, 59.4), (cx + 11.4, 59.9), (cx - 11.6, 59.9)])
-    text("TERRACIDE303", cx, 63.2, 2.4, 0.4)
-    text("HuCARD  FPGA  CD-ROM²", cx, 67.0, 1.1, 0.18, italic=False)
-    text("rev 0.1  ·  2026", cx, 69.2, 1.0, 0.15, italic=False)
-
-    # ---- front: a one-line credit in the empty bus channel beside the SDRAM
-    text("TERRACIDE303 · PCE CD", 38.0, 56.0, 1.0, 0.15, layer=pcbnew.F_SilkS, mirror=False)
+    cx = 36.6                                  # centre of the free strip, mm
+    text("PC Engine / TurboGrafx", cx, 53.2, 1.0, 0.15)
+    rom = text("CD-ROM", cx - 0.7, 56.4, 2.4, 0.38, italic=True)
+    # the small raised 2: just right of CD-ROM's last letter, aligned to its top
+    bb = rom.GetBoundingBox()
+    right, top = pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetY())
+    two = text("2", 0, 0, 1.2, 0.2, italic=True)
+    two.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+    two.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_TOP)
+    two.SetPosition(mm(right + 0.05, top + 0.1))
+    line(cx - 8.5, 58.6, cx + 8.5, 58.6, 0.2)
+    text("TERRACIDE303", cx, 60.6, 1.4, 0.22)
+    text("rev 0.1  ·  2026", cx, 62.6, 0.8, 0.12)
 
     board.Save(str(PCB))
-    print(f"art: {len(list(group.GetItems()))} silkscreen items in group 'art' (back panel + front credit)")
+    print(f"art: {len(list(group.GetItems()))} silkscreen items in group 'art' (front)")
 
 
 if __name__ == "__main__":

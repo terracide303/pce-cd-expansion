@@ -12,7 +12,7 @@ general method, and the lessons behind each step, are in PCB HERO's playbook
 | 4. board | `"C:/Users/terra/AppData/Local/Programs/KiCad/10.0/bin/python.exe" tools/make_card_pcb.py` | outline, stack-up, rules, fingers, nets from KiCad's netlist (wipes placement) |
 | 5. place | `... python.exe tools/place_card.py <icepi-zero.kicad_pcb>` | Icepi block copied and pad-verified, card parts at their pins, translators facing the fingers |
 | 5b. silkscreen | `... python.exe tools/silk_card.py` | every reference beside its own part, closer to it than to any other labelled part, never under a part, touching nothing; else to the Fab layer |
-| 5c. artwork | `... python.exe tools/art_card.py` | the back panel (disc, stripes, PCE / CD EXPANSION / TERRACIDE303) and the front credit; stroke font only, re-runnable |
+| 5c. artwork | `... python.exe tools/art_card.py` | front text: PC Engine / TurboGrafx, CD-ROM² (small raised 2), TERRACIDE303, rev; stroke font only, re-runnable |
 | 5d. 3D models | `... python.exe tools/models_card.py` | models for parts whose footprints have none (microSD, buttons, oscillator), aligned to our pads; visual only |
 | 6. parity + DRC | `kicad-cli pcb drc --schematic-parity hw/card/pce_card.kicad_pcb` | board = schematic |
 | 7. **look at it** | `python ../PCBHero/scripts/snapshot.py hw/card/pce_card.kicad_pcb`, or the panel's Viewer | answer the checklist in writing; fix what the picture shows |
