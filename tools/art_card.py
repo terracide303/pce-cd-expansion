@@ -82,7 +82,7 @@ def main():
     two.SetPosition(mm(right + 0.05, top + 0.1))
     line(cx - 8.5, 58.6, cx + 8.5, 58.6, 0.2)
     text("TERRACIDE303", cx, 60.6, 1.4, 0.22)
-    text("rev 0.1  ·  2026", cx, 62.6, 0.8, 0.12)
+    text("rev 0.1 · 2026", cx, 62.6, 1.0, 0.15)    # 1.0 mm / 0.15 mm: the fab minimum
 
     board.Save(str(PCB))
     print(f"art: {len(list(group.GetItems()))} silkscreen items in group 'art' (front)")

@@ -1,9 +1,10 @@
 # The card: custom design rules
 #
-# FAB: JLCPCB 4-layer JLC04121H-7628. We draw the Icepi Zero v1.4's proven numbers on the same stack-up:
-#   tracks >= 0.15 mm (0.2 mm default), clearance 0.13 mm,
-#   vias 0.6/0.3 mm, and 0.45/0.2 mm under the BGA.
-# In1 = GND plane, In2 = power planes (1V1 under the FPGA core, 3V3 elsewhere), as on the Icepi.
+# FAB: JLCPCB or PCBWay, 4-layer standard (no surcharge).
+#   tracks >= 0.1 mm (0.2 mm default, 0.3 mm power), clearance 0.1 mm,
+#   every via 0.45/0.2 mm, hole to foreign copper 0.2 mm,
+#   copper to edge 0.3 mm (not the fingers), silkscreen text 1.0 mm / lines 0.15 mm.
+# In1 = GND plane, In2 = +3V3 plane.
 #
 # RULES NO DRC CAN CHECK, look before ordering:
 #  - the 8.6 mm finger zone holds only fingers and the tracks that leave them (rule area on the board);
@@ -14,25 +15,27 @@
 (version 1)
 
 (rule "minimum track width"
-	(constraint track_width (min 0.15mm))
+	(constraint track_width (min 0.1mm))
 	(severity error))
 
 (rule "minimum clearance"
-	(constraint clearance (min 0.13mm))
+	(constraint clearance (min 0.1mm))
 	(severity error))
 
-(rule "BGA vias"
+(rule "vias: standard-price size at both fabs"
 	(constraint via_diameter (min 0.45mm))
 	(constraint hole_size (min 0.2mm))
-	(condition "A.Type == 'Via' && A.insideCourtyard('U1')"))
-
-(rule "other vias"
-	(constraint via_diameter (min 0.6mm))
-	(constraint hole_size (min 0.3mm))
-	(condition "A.Type == 'Via' && !A.insideCourtyard('U1')"))
+	(condition "A.Type == 'Via'"))
 
 (rule "hole to hole"
 	(constraint hole_to_hole (min 0.25mm))
+	(severity error))
+
+# A library footprint's own pads and pegs (the USB-C sockets' GND pads sit 0.194 mm
+# from their pegs) are the part maker's geometry, made by both fabs every day.
+(rule "hole to foreign copper"
+	(constraint hole_clearance (min 0.2mm))
+	(condition "!(A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference)")
 	(severity error))
 
 (rule "copper to board edge"
@@ -40,6 +43,10 @@
 	(condition "A.Parent.Reference != 'J101'")
 	(severity error))
 
-(rule "power track width"
-	(constraint track_width (min 0.4mm))
-	(condition "A.NetClass == 'Power'"))
+# Power nets are drawn 0.3 mm (their net class) but may neck to the
+# track minimum where they enter a fine-pitch pad, so no separate minimum for them.
+
+(rule "silkscreen text"
+	(constraint text_height (min 1.0mm))
+	(constraint text_thickness (min 0.15mm))
+	(condition "A.Layer == 'F.Silkscreen' || A.Layer == 'B.Silkscreen'"))

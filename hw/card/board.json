@@ -1,13 +1,16 @@
 {
-  "_comment": "Read by PCB HERO's scripts/check_board.py. Numbers from the Icepi Zero v1.4 on the same 4-layer stack-up.",
+  "_comment": "Read by PCB HERO's scripts/check_board.py. The standard-price floor of JLCPCB and PCBWay, 4 layers.",
   "fab": {
-    "name": "JLCPCB 4-layer JLC04121H-7628",
-    "track": 0.09,
-    "clearance": 0.09,
-    "via_hole": 0.15,
-    "via_dia": 0.25,
+    "name": "JLCPCB or PCBWay, 4-layer standard (no surcharge)",
+    "track": 0.1,
+    "clearance": 0.1,
+    "via_hole": 0.2,
+    "via_dia": 0.45,
     "hole_to_hole": 0.25,
-    "edge": 0.25
+    "edge": 0.3,
+    "hole_clearance": 0.2,
+    "silk_line": 0.15,
+    "silk_text": 1.0
   },
   "bga": [
     {

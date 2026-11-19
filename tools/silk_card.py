@@ -12,8 +12,9 @@ outside the slot keep-out, never on top of any part (hidden once soldered), and
 closer to its own part than to any other, so it cannot be read as another part's label. A reference that fits nowhere goes to the Fab
 (assembly) layer, so it is still on the assembly drawing. Prints what it did.
 
-What it does not touch: lines drawn inside library footprints (outlines, pin-1
-marks). Where those meet a pad, the fab clips the silkscreen off the copper.
+Library footprints draw their outlines at 0.12 mm; every silkscreen line thinner
+than MIN_LINE is widened to it first (filled shapes keep their fill). Where those
+lines meet a pad, the fab clips the silkscreen off the copper.
 """
 import pathlib, sys
 
@@ -23,7 +24,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PCB = ROOT / "hw" / "card" / "pce_card.kicad_pcb"
 W, H, SLOT = 54.1, 85.4, 8.6
 GAP = 0.15                       # clearance kept around every text, mm
-SIZES = [(1.0, 0.15), (0.8, 0.12)]     # text height, stroke (0.8 mm is the board's minimum)
+SIZES = [(1.0, 0.15)]           # text height, stroke: the fab minimum (JLCPCB: text 1.0 mm, lines 0.15 mm)
+MIN_LINE = 0.15                  # silkscreen line width the fabs print reliably
 
 
 def box(b, grow=0.0):
@@ -39,6 +41,53 @@ def main():
     board = pcbnew.LoadBoard(str(PCB))
     fps = list(board.GetFootprints())
     silk = {pcbnew.F_SilkS: "F", pcbnew.B_SilkS: "B"}
+    widened = 0
+    for fp in fps:
+        for item in fp.GraphicalItems():
+            if item.GetLayer() in silk and item.GetClass() != "PCB_TEXT" and 0 < item.GetWidth() < pcbnew.FromMM(MIN_LINE):
+                item.SetWidth(pcbnew.FromMM(MIN_LINE))
+                widened += 1
+
+    # Outline strokes the fab would clip anyway: off the board, on copper, or across
+    # another part's silkscreen. Removed, so what DRC sees is what gets printed.
+    # Filled shapes (pin-1 marks) are kept: they carry meaning.
+    def stroke(item):
+        return item.GetLayer() in silk and item.GetClass() == "PCB_SHAPE" and not item.IsSolidFill()
+
+    def copper_of(item):
+        return pcbnew.F_Cu if item.GetLayer() == pcbnew.F_SilkS else pcbnew.B_Cu
+    pads = [p for fp in fps for p in fp.Pads()]
+    removed, doomed = [], []
+    for fp in fps:
+        for item in list(fp.GraphicalItems()):
+            if not stroke(item):
+                continue
+            b = box(item.GetBoundingBox())
+            shape = item.GetEffectiveShape()
+            why = None
+            if b[0] < 0 or b[1] < 0 or b[2] > W or b[3] > H:
+                why = "off the board"
+            elif any(p.IsOnLayer(copper_of(item)) and hit(b, box(p.GetBoundingBox()))
+                     and shape.Collide(p.GetEffectiveShape(copper_of(item)), 0) for p in pads):
+                why = "on copper"
+            else:
+                for other in fps:
+                    if other.GetReference() == fp.GetReference():
+                        continue
+                    for o in other.GraphicalItems():
+                        if any(o.m_Uuid.AsString() == d.m_Uuid.AsString() for _, d in doomed):
+                            continue           # already going: it blocks nothing
+                        if (o.GetLayer() == item.GetLayer() and o.GetClass() == "PCB_SHAPE"
+                                and hit(b, box(o.GetBoundingBox())) and shape.Collide(o.GetEffectiveShape(), 0)):
+                            why = f"across {other.GetReference()}'s silkscreen"
+                            break
+                    if why:
+                        break
+            if why:
+                doomed.append((fp, item))
+                removed.append(f"{fp.GetReference()} ({why})")
+    for fp, item in doomed:            # after the scan: removing while iterating breaks the bindings
+        fp.Remove(item)
     obstacles = {"F": [], "B": []}
     for fp in fps:
         for pad in fp.Pads():
@@ -132,6 +181,8 @@ def main():
             to_fab += 1
             fabbed.append(fp.GetReference())
     board.Save(str(PCB))
+    print(f"silkscreen: {widened} footprint lines widened to {MIN_LINE} mm")
+    print(f"silkscreen: {len(removed)} footprint outline strokes removed: {', '.join(removed) or '-'}")
     print(f"silkscreen: {moved} references placed clear of everything ({shrunk} at a smaller size), "
           f"{to_fab} moved to the Fab layer: {', '.join(fabbed) or '-'}")
 

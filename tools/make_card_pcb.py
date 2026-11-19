@@ -15,7 +15,8 @@ sheet. Placement is human (PCB HERO's rule), and with a 0.8 mm BGA the FPGA, SDR
 and regulators should follow the Icepi Zero's proven arrangement.
 
 Also writes the .kicad_dru, the project rules and board.json for PCB HERO's checker.
-Stack-up, vias and track widths are the Icepi Zero v1.4's (4-layer JLC04121H-7628).
+Stack-up is the Icepi Zero v1.4's (4-layer JLC04121H-7628); rules are what JLCPCB and
+PCBWay both make at standard price (FAB below).
 """
 import json, os, pathlib, re, subprocess, sys, tempfile
 
@@ -35,12 +36,16 @@ LIBS = {"pce_card": OUT / "pce_card.pretty", "icepi-lib": OUT / "reference" / "i
 W, H = 54.1, 85.4                   # HuCard outline; the finger edge is y = H
 SLOT = 8.6                          # how deep the slot takes the card
 
-# JLCPCB 4-layer floor (from KiCadRoutingTools fab_tiers, 4-layer standard) and what the
-# Icepi Zero actually uses on the same stack-up; we draw the Icepi's numbers.
-FAB = {"name": "JLCPCB 4-layer JLC04121H-7628", "track": 0.09, "clearance": 0.09, "via_hole": 0.15,
-       "via_dia": 0.25, "hole_to_hole": 0.25, "edge": 0.25}
-DESIGN = {"track": 0.15, "clearance": 0.13, "via_dia": 0.6, "via_drill": 0.3,
-          "bga_via_dia": 0.45, "bga_via_drill": 0.2, "edge": 0.3, "power_track": 0.4}
+# What both JLCPCB and PCBWay make on 4 layers at STANDARD price (checked on their
+# capability pages, 2026-11-19): JLC 0.09/0.09 mm tracks, PCBWay 0.1/0.1 mm (4 mil);
+# vias with a 0.2 mm hole and 0.45 mm pad (a 0.15 mm hole costs extra at both);
+# via hole to track 0.2 mm (JLC); copper to a routed edge 0.2-0.25 mm; silkscreen
+# lines >= 0.15 mm and text >= 1.0 mm (JLC; PCBWay 0.8). We hold the stricter of each.
+FAB = {"name": "JLCPCB or PCBWay, 4-layer standard (no surcharge)", "track": 0.1, "clearance": 0.1,
+       "via_hole": 0.2, "via_dia": 0.45, "hole_to_hole": 0.25, "edge": 0.3, "hole_clearance": 0.2,
+       "silk_line": 0.15, "silk_text": 1.0}
+DESIGN = {"track": 0.1, "clearance": 0.1, "default_track": 0.2, "via_dia": 0.45, "via_drill": 0.2,
+          "bga_via_dia": 0.45, "bga_via_drill": 0.2, "edge": 0.3, "power_track": 0.3}
 
 GROUP_ORDER = ["bus", "power", "fpga", "flash", "sdram", "sd", "usb_jtag", "companion", "audio"]
 
@@ -211,19 +216,21 @@ def add_stackup():
 def write_rules():
     pro_path = OUT / "pce_card.kicad_pro"
     pro = json.loads(pro_path.read_text(encoding="utf-8")) if pro_path.exists() else {}
-    pro.setdefault("board", {}).setdefault("design_settings", {})["rules"] = {
+    # update, not replace: keep the keys KiCad adds when it saves the project
+    pro.setdefault("board", {}).setdefault("design_settings", {}).setdefault("rules", {}).update({
         "min_clearance": DESIGN["clearance"], "min_track_width": DESIGN["track"],
         "min_via_diameter": DESIGN["bga_via_dia"], "min_through_hole_diameter": DESIGN["bga_via_drill"],
-        "min_hole_to_hole": 0.25, "min_copper_edge_clearance": DESIGN["edge"],
+        "min_hole_to_hole": FAB["hole_to_hole"], "min_copper_edge_clearance": DESIGN["edge"],
         # 0.18, not 0.25: the USB4105 USB-C footprint (as on the Icepi) has its GND pads
         # 0.194 mm from its own locating-peg holes. JLC's NPTH-to-pad floor is below that.
         "min_hole_clearance": 0.18,
         "min_via_annular_width": 0.1,
-    }
+        "min_text_height": FAB["silk_text"], "min_text_thickness": FAB["silk_line"],
+    })
     power = ["+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP", "+3V3", "+2V5", "+1V1", "+1V1_RP", "PWR_FILTERED_2V5", "GND"]
     pro["net_settings"] = {
         "classes": [
-            {"name": "Default", "clearance": DESIGN["clearance"], "track_width": 0.2,
+            {"name": "Default", "clearance": DESIGN["clearance"], "track_width": DESIGN["default_track"],
              "via_diameter": DESIGN["via_dia"], "via_drill": DESIGN["via_drill"]},
             {"name": "Power", "clearance": DESIGN["clearance"], "track_width": DESIGN["power_track"],
              "via_diameter": DESIGN["via_dia"], "via_drill": DESIGN["via_drill"]},
@@ -234,10 +241,11 @@ def write_rules():
     pro_path.write_text(json.dumps(pro, indent=2) + "\n", encoding="utf-8")
     (OUT / "pce_card.kicad_dru").write_text(f"""# The card: custom design rules
 #
-# FAB: {FAB['name']}. We draw the Icepi Zero v1.4's proven numbers on the same stack-up:
-#   tracks >= {DESIGN['track']} mm (0.2 mm default), clearance {DESIGN['clearance']} mm,
-#   vias {DESIGN['via_dia']}/{DESIGN['via_drill']} mm, and {DESIGN['bga_via_dia']}/{DESIGN['bga_via_drill']} mm under the BGA.
-# In1 = GND plane, In2 = power planes (1V1 under the FPGA core, 3V3 elsewhere), as on the Icepi.
+# FAB: {FAB['name']}.
+#   tracks >= {DESIGN['track']} mm ({DESIGN['default_track']} mm default, {DESIGN['power_track']} mm power), clearance {DESIGN['clearance']} mm,
+#   every via {DESIGN['via_dia']}/{DESIGN['via_drill']} mm, hole to foreign copper {FAB['hole_clearance']} mm,
+#   copper to edge {DESIGN['edge']} mm (not the fingers), silkscreen text {FAB['silk_text']} mm / lines {FAB['silk_line']} mm.
+# In1 = GND plane, In2 = +3V3 plane.
 #
 # RULES NO DRC CAN CHECK, look before ordering:
 #  - the 8.6 mm finger zone holds only fingers and the tracks that leave them (rule area on the board);
@@ -248,38 +256,44 @@ def write_rules():
 (version 1)
 
 (rule "minimum track width"
-\t(constraint track_width (min {DESIGN['track']}mm))
-\t(severity error))
+	(constraint track_width (min {DESIGN['track']}mm))
+	(severity error))
 
 (rule "minimum clearance"
-\t(constraint clearance (min {DESIGN['clearance']}mm))
-\t(severity error))
+	(constraint clearance (min {DESIGN['clearance']}mm))
+	(severity error))
 
-(rule "BGA vias"
-\t(constraint via_diameter (min {DESIGN['bga_via_dia']}mm))
-\t(constraint hole_size (min {DESIGN['bga_via_drill']}mm))
-\t(condition "A.Type == 'Via' && A.insideCourtyard('U1')"))
-
-(rule "other vias"
-\t(constraint via_diameter (min {DESIGN['via_dia']}mm))
-\t(constraint hole_size (min {DESIGN['via_drill']}mm))
-\t(condition "A.Type == 'Via' && !A.insideCourtyard('U1')"))
+(rule "vias: standard-price size at both fabs"
+	(constraint via_diameter (min {DESIGN['via_dia']}mm))
+	(constraint hole_size (min {DESIGN['via_drill']}mm))
+	(condition "A.Type == 'Via'"))
 
 (rule "hole to hole"
-\t(constraint hole_to_hole (min 0.25mm))
-\t(severity error))
+	(constraint hole_to_hole (min {FAB['hole_to_hole']}mm))
+	(severity error))
+
+# A library footprint's own pads and pegs (the USB-C sockets' GND pads sit 0.194 mm
+# from their pegs) are the part maker's geometry, made by both fabs every day.
+(rule "hole to foreign copper"
+	(constraint hole_clearance (min {FAB['hole_clearance']}mm))
+	(condition "!(A.Type == 'Pad' && B.Type == 'Pad' && A.Parent.Reference == B.Parent.Reference)")
+	(severity error))
 
 (rule "copper to board edge"
-\t(constraint edge_clearance (min {DESIGN['edge']}mm))
-\t(condition "A.Parent.Reference != 'J101'")
-\t(severity error))
+	(constraint edge_clearance (min {DESIGN['edge']}mm))
+	(condition "A.Parent.Reference != 'J101'")
+	(severity error))
 
-(rule "power track width"
-\t(constraint track_width (min {DESIGN['power_track']}mm))
-\t(condition "A.NetClass == 'Power'"))
+# Power nets are drawn {DESIGN['power_track']} mm (their net class) but may neck to the
+# track minimum where they enter a fine-pitch pad, so no separate minimum for them.
+
+(rule "silkscreen text"
+	(constraint text_height (min {FAB['silk_text']}mm))
+	(constraint text_thickness (min {FAB['silk_line']}mm))
+	(condition "A.Layer == 'F.Silkscreen' || A.Layer == 'B.Silkscreen'"))
 """, encoding="utf-8")
     (OUT / "board.json").write_text(json.dumps({
-        "_comment": "Read by PCB HERO's scripts/check_board.py. Numbers from the Icepi Zero v1.4 on the same 4-layer stack-up.",
+        "_comment": "Read by PCB HERO's scripts/check_board.py. The standard-price floor of JLCPCB and PCBWay, 4 layers.",
         "fab": FAB,
         "bga": [{"ref": "U1", "pitch": 0.8, "via": [DESIGN["bga_via_dia"], DESIGN["bga_via_drill"]]}],
         "diff_classes": [], "min_custom_rules": 6, "ignore_pairlike": ["RP_DP", "RP_DM", "USB_D2+", "USB_D2-"],

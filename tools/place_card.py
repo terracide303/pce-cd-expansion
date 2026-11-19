@@ -17,7 +17,7 @@
 
 Reads and writes hw/card/pce_card.kicad_pcb. Close the board in KiCad first.
 """
-import math, pathlib, sys
+import math, pathlib, re, sys, tempfile
 
 import pcbnew
 
@@ -30,6 +30,7 @@ import design  # noqa: E402
 W, H, SLOT = 54.1, 85.4, 8.6
 ICEPI_EDGE_LEFT, ICEPI_EDGE_BOTTOM = 115.975, 120.025       # Icepi board edges (x of the SD edge, y of the USB edge)
 J5_GROUP = ["J5", "U10", "R36", "R37", "TP13", "TP14"]
+BLOCK_INSET = 0.3                # mm the Icepi block sits in from the SD edge (copper to edge)
 
 
 def mm(x, y):
@@ -62,9 +63,20 @@ def rotate_about(fp, cx, cy, deg):
     fp.Rotate(mm(cx, cy), pcbnew.EDA_ANGLE(deg, pcbnew.DEGREES_T))
 
 
+def load_without_fonts(path):
+    """Load a board with its text fonts removed. The Icepi names "Fira Code" for one
+    text; where that font is not installed, KiCad's Python opens a "font not found"
+    dialog and waits for a click, so a script hangs. Positions and pads do not depend
+    on fonts."""
+    text = re.sub(r'\s*\(face "[^"]*"\)', "", pathlib.Path(path).read_text(encoding="utf-8"))
+    tmp = pathlib.Path(tempfile.mkdtemp()) / pathlib.Path(path).name
+    tmp.write_text(text, encoding="utf-8")
+    return pcbnew.LoadBoard(str(tmp))
+
+
 def main():
     board = pcbnew.LoadBoard(str(PCB))
-    icepi = pcbnew.LoadBoard(str(ICEPI))
+    icepi = load_without_fonts(ICEPI)
     fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
     src = {fp.GetReference(): fp for fp in icepi.GetFootprints()}
     kept = [p["ref"] for p in design.PARTS if p["origin"] == "icepi"]
@@ -97,7 +109,11 @@ def main():
     t.SetPosition(probe)
     t.Rotate(mm(0, 0), pcbnew.EDA_ANGLE(-90, pcbnew.DEGREES_T))
     px, py = xy(t.GetPosition())
-    dx, dy = 0 - px, 0 - py          # the corner (SD edge, USB edge) -> card (0, 0)
+    # the corner (SD edge, USB edge) -> card (0, BLOCK_INSET). The inset is the one
+    # departure from the Icepi: its microSD socket's shield tabs sit 0.025 mm from the
+    # SD edge; JLCPCB and PCBWay need 0.2 mm copper to a milled edge. The whole block
+    # moves, so nothing inside it changes.
+    dx, dy = 0 - px, 0 - py + BLOCK_INSET
     for ref in kept:
         fps[ref].Move(mm(dx, dy))
     j6 = courtyard(fps["J6"])
@@ -137,7 +153,7 @@ def main():
     put("D102", 47.0, 46.5, 0)
     put("D103", 47.0, 50.0, 0)
     put("U101", 13.0, 71.5, 90)       # bus row, right behind the slot zone
-    put("U105", 26.0, 69.0, 90)       # 2.5 mm higher: its 33 ohm resistors go between it and the fingers
+    put("U105", 26.0, 69.3, 90)       # 2.2 mm higher than the others: its 33 ohm resistors go between it and the fingers; clear of the SDRAM
     put("U102", 38.5, 71.5, 90)
     put("U103", 48.5, 71.5, 90)
     put("U104", 4.0, 69.5, 0)
