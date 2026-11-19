@@ -1,0 +1,73 @@
+Source: https://pce.nesdev.org/wiki/EXT_BUS_pinout (raw wiki text, fetched 2026-11-19)
+
+On the back of PC Engine, CoreGrafx, CoreGrafx2, but '''not''' Shuttle, 3x23 0.1" pin header 
+
+From perspective of someone looking into the back of the console, holding the AV or RF port up, power jack down, and card slot away from you:
+
+{| class="wikitable"
+|AudioL || AudioC || AudioR
+|-
+| +5A || K7 || 0VAG
+|-
+|CESEL || HSM || /CARD
+|-
+|A18 || /WR || /CEK
+|-
+|A14 || /NMI || A17
+|-
+|A9 || A8 || A13
+|-
+|A10 || /RD || A11
+|-
+|D6 || D7 || GND
+|-
+|DCK || D4 || D5
+|-
+|/VSYNC || D2 || D3
+|-
+|EXTPGW || /HSYNC || D1
+|-
+|VD8 || A0 || D0
+|-
+|VD7 || A2 || A1
+|-
+|EXTPGW || VD6 || A3
+|-
+|VD5 || A5 || A4
+|-
+|VD4 || A7 || A6
+|-
+|VD3 || A12 || GND
+|-
+|VD2 || A16 || A15
+|-
+|VD1 || A20 || A19
+|-
+|VD0 || RDY || GND
+|-
+|0VAG || /IRQ2 || +5A
+|-
+|CompV || /RESET || CSync
+|-
+|VideoR || VideoG || VideoB
+|}
+
+===Signal descriptions===
+* '''Audio-L''' and '''Audio-R''': analog outputs from the CPU
+* '''Audio-C''': analog audio mixed in with the above to the mono output for RF or AV OUT
+* '''+5A''' and '''0VAG''': analog voltage supply for VCE and video amplifier
+* '''GND''': Digital ground. Notice absence of 5V digital supply.
+* '''K7''': CPU input for detect CD unit presence
+* '''CESEL''': VCE input to set /HSYNC, /VSYNC, and DCK to high impedance
+* '''/HSYNC''', '''/VSYNC''', '''DCK''': VCE-generated video timing signals
+* '''HSM''': CPU output specifying 7.2MHz operation
+* '''/CARD''': wire to HuCard slot pin 1, for the CD unit to detect HuCard presence. (Pulled up inside console; expected to be grounded by HuCard)
+* '''A0''' through '''A20''': CPU address bus
+* '''D0''' through '''D7''': CPU data bus. (Maybe reversed in Turbografx? Double check)
+* '''/WR''', '''/RD''', '''/NMI''', '''/IRQ2''', '''RDY''', '''/RESET''': normal CPU signals
+* '''/CEK''': Asserted by the CPU when it's addressing the VCE
+* '''EXTPGW''': external unregulated 9V-ish supply, used when nothing's plugged into the barrel jack
+* '''VD0''' through '''VD8''': raw digital pixel data from VDC to VCE. VD8 also marks sprite pixels.
+* '''CompV''': Composite video, suitable for direct connection to TV
+* '''CSync''': Composite sync, 5V levels
+* '''VideoR''', '''VideoG''', '''VideoB''': raw analog video from VCE with significant DC offset. Unclear if they're rated for enough output current after a DC blocker to be used the same one makes an RGB cable for a megadrive.

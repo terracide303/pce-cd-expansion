@@ -1,0 +1,41 @@
+header_pos,fpga_pin,io_name,shared_with,stage1_status,why
+L1,73,IOT40A,BL616 HSPI_DIN2,unverified,on-board BL616 line; FPGA-Companion does not use it; must be shown quiet before use
+L2,74,IOT34B,BL616 HSPI_DIN3,unverified,on-board BL616 line; FPGA-Companion does not use it; must be shown quiet before use
+L3,75,IOT34A,BL616 HSPI_DIR,keep,FPGA-Companion link (spi_dir in PCEHeroTN #189); needed for the microSD/companion path later
+L4,85,IOT4B,microSD SDIO_D1,keep,on-board microSD slot data line
+L5,77,IOT30A,LCD_CLK (GCLKT_1),free,FPC display connector only; nothing fitted
+L6,15,IOL47A,LED0 (LPLL2_T),usable,drives an on-board LED; the LED lights when the line is low
+L7,16,IOL47B,LED1 (LPLL2_C),usable,drives an on-board LED
+L8,27,IOB8A,LCD_B7,free,FPC display connector only
+L9,28,IOB8B,LCD_B6,free,FPC display connector only
+L10,25,IOB6A,LCD_HS,free,FPC display connector only
+L11,26,IOB6B,LCD_VS,free,FPC display connector only
+L12,29,IOB14A,LCD_B5,free,FPC display connector only
+L13,30,IOB14B,LCD_B4,free,FPC display connector only
+L14,31,IOB29A,LCD_B3,free,FPC display connector only
+L15,17,IOL49A,LED2,usable,drives an on-board LED
+L16,20,IOL51B,LED5,usable,drives an on-board LED
+L17,19,IOL51A,LED4,usable,drives an on-board LED
+L18,18,IOL49B,LED3,usable,drives an on-board LED
+L19,,3V3,,power,3.3 V out of the Tang
+L20,,GND,,power,
+R1,,5V,,power,USB 5 V of the Tang; NOT to be tied to the console
+R2,,GND,,power,
+R3,76,IOT30B,BL616 HSPI_DAT (GCLKC_1),keep,FPGA-Companion link (spi_dat)
+R4,80,IOT27A,microSD SDIO_D2,keep,on-board microSD slot data line
+R5,42,IOB42B,LCD_R3,free,FPC display connector only
+R6,41,IOB43A,LCD_R4,free,FPC display connector only
+R7,56,IOR36A,MAX98357A I2S_BCLK,usable,input of the on-board speaker amp (high impedance)
+R8,54,IOR38A,MAX98357A I2S_DIN,usable,input of the on-board speaker amp
+R9,51,IOR45A,MAX98357A PA_EN,usable,amp enable; as an FPGA input the amp may be enabled by whatever drives it
+R10,48,IOR49B,LCD_DE,free,FPC display connector only
+R11,55,IOR36B,MAX98357A I2S_LRCK,usable,input of the on-board speaker amp
+R12,49,IOR49A,LCD_BL,free,FPC display connector only
+R13,86,IOT4A,BL616 HSPI_CSN,keep,FPGA-Companion link (spi_csn)
+R14,79,IOT27B,WS2812 DIN (GCLKC_0),keep,drives the on-board RGB LED
+R15,,GND,,power,
+R16,,3V3,,power,3.3 V out of the Tang
+R17,72,IOT40B,BL616 HSPI_DIN1,unverified,on-board BL616 line; FPGA-Companion does not use it; must be shown quiet before use
+R18,71,IOT44A,BL616 HSPI_DIN0,unverified,on-board BL616 line; FPGA-Companion does not use it; must be shown quiet before use
+R19,53,IOR38B,HDMI EDID_CLK,usable,HDMI DDC line; free until HDMI output (phase 3)
+R20,52,IOR39A,HDMI EDID_DAT,usable,HDMI DDC line; free until HDMI output (phase 3)
