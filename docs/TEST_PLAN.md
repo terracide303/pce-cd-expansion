@@ -183,10 +183,12 @@ selected). **Fail:** the card decodes A20 high too; choose a different bank rang
 ### T4b: A card may drive above the card window (scope, card fitted, self-test ROM running)
 
 **Answers:** whether **our** board can answer `$100000` (A20 = 1) on a console with
-no CD unit. The practice is already settled — the Turbo EverDrive Pro's built-in
-CD-ROM² core does exactly this from the card slot
-([BUS_OPTIONS.md](BUS_OPTIONS.md) §10) — so this is not a go/no-go any more. What it
-checks is our decode, our drive strength and our timing, on our board.
+no CD unit. The practice is settled twice over: the Turbo EverDrive Pro's built-in
+CD-ROM² core does it from the card slot, and its MIT-licensed sources show the
+mechanism — data is driven whenever /RD is low and a decoded window matches, with
+the console's `/CE` not involved
+([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2). So this checks our
+decode, our drive strength and our timing, not the architecture.
 
 **Probe:** CH1 /RD (card 26), CH2 A20 (card 24), CH3 D0 (card 15), CH4 /SEL_RAM
 (the decoder's output for `$100000`), during the self-test ROM's read-back.

@@ -33,7 +33,7 @@ its own RDY, lines 168–170); slow mode (HSM low) is 24 ticks per cycle.
 | **CD RAM**, 64 KB | `$100000–$10FFFF` | banks `$80–$87` | `cd.vhd` `RAM_SEL` covers `$68–$87` as one 256 KB block | CD interface unit (stage 1 already answers here) |
 | **Super System Card RAM**, 192 KB | `$0D0000–$0FFFFF` | banks `$68–$7F` | same block | **inside the Super System Card HuCard.** If that card is plugged in, our board must NOT answer here, or two devices drive the bus. **Make it switchable** |
 | **Backup RAM**, 2 KB | `$1EE000–$1EE7FF` | bank `$F7` | `pce_top.vhd` `CPU_BRM_SEL_N`: A20..11 = `$F7`&`00` | CD interface unit; locked/unlocked through `$1807` / `$1803` |
-| **signature bytes** | `$1FF8C1–C7` | `$18C1–$18C7` | `cd.vhd` returns AA, 55, 00, then region bytes | **open:** CD unit or Super System Card? Decides whether we answer |
+| **signature bytes** | `$1FF8C1–C7` | `$18C1–$18C7` | `cd.vhd` returns AA, 55, 00, then region bytes | **answered** ([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §3): the **Super System Card** answers, being a card — `AA 55 00 FF`, then two region bytes, `C7` = `$C0` or `$03` |
 
 ## 3. CD presence
 
@@ -60,6 +60,11 @@ board must hold b2 low, or the System Card won't look for a drive.
 | `$180D` | ADPCM control (bit 5 = play) | same | |
 | `$180E` | ADPCM rate (bits 3..0) | same | |
 | `$180F` | fader (bits 3..1) | same | |
+
+A shipping card's reference implementation puts its own registers at
+`$1FFFF0–$1FFFFF` and answers `$1FF8C0`, `$1EE000` and `$0D0000` from the cartridge
+([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2) — i.e. our window list
+above is what a working device actually decodes.
 
 **Reads with side effects mean the FPGA must act on each read exactly once per bus
 cycle**: detect /RD's falling (or rising) edge once, never the level. Stage 1's
@@ -93,6 +98,6 @@ around multiplexing or a bigger board from the start.
 
 | question | how to answer |
 |---|---|
-| who answers `$18C1–$18C7` on real hardware | read a real System Card's behaviour (logic analyser on `$1FF8Cx` reads), or its disassembly |
+| who answers `$18C1–$18C7` on real hardware | **answered** from a shipping card's sources: the Super System Card, with the byte values in [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §3. Still worth a logic-analyser check against a real SSC for the region pair |
 | does a Super System Card claim `$68–$7F` itself | same; then the board's `$68–$7F` select is a jumper or a config bit |
 | does the real HuC6280 do dummy reads on `$18xx` (e.g. read-modify-write instructions) that would trigger read side effects twice | the instruction timings in the HuC6280 Software Manual + a logic-analyser capture |

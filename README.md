@@ -48,6 +48,12 @@ exists yet. The design hand-off from the planning chat is
   real CD unit is attached — the whole CD system is in the card. It also shows the
   audio answer: a separate stereo expansion board (EDFX), not the card
   ([docs/BUS_OPTIONS.md](docs/BUS_OPTIONS.md) §10).
+- **Reference implementation, MIT:** [docs/REFERENCE-EVERDRIVE-PRO.md](docs/REFERENCE-EVERDRIVE-PRO.md)
+  — the Turbo EverDrive PRO/CORE development sources
+  ([krikzz/turbo-ed-pro-pub](https://github.com/krikzz/turbo-ed-pro-pub)): the real
+  bus contract (a cart drives whenever /RD is low and its window matches), the
+  windows it answers, the `$18C1–$18C7` signature bytes, the mapper set including
+  Street Fighter II's, and the firmware changelog read as a risk list.
 - **Stage 2 reference:** [docs/STAGE2_REFERENCE.md](docs/STAGE2_REFERENCE.md) — the
   MiSTer core's CD-ROM² memory map, registers, read side effects, IRQ2, K7, backup
   RAM, and the bus timing its CPU model implies.

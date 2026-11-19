@@ -134,12 +134,18 @@ What that settles for us:
 
 | question | answer |
 |---|---|
-| may a card answer `$1FF800` and drive `$100000`? (T4b) | **yes, commercially proven.** Why we still run T4b: our decode, our board, our timing — but it is now expected to pass, not a risk |
+| may a card answer `$1FF800` and drive `$100000`? (T4b) | **yes, in the shipping product and in its source**: `bus_oe = cpu.oe & (own windows)`, `/CE` not involved ([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2). T4b now checks our decode and timing only |
 | is the card the right host for the CD logic? | yes, which is the decision this document records |
 | does a card need a System Card? | no — the device is the System Card, and its BIOS is a file |
 | stereo CD-DA from a card alone? | **no** — they say so themselves: "CD and hucard audio doesn't work via RF output" because of the mixing circuit, and they sell the **EDFX**, a **stereo expansion board**, alongside it |
 | how are regions handled? | they do "switchless region auto detection" — consistent with §5's bit reversal, done in logic |
 | what does it need that we lack? | a **Cyclone IV** and **16 MB PSRAM** on a 6-layer board — i.e. the "bigger module" of [STAGE1-CARD.md](STAGE1-CARD.md) §7, not a different idea |
+
+Better than the product page: the cartridges' **development sources are public and
+MIT licensed** ([krikzz/turbo-ed-pro-pub](https://github.com/krikzz/turbo-ed-pro-pub)),
+including the bus layer and the mappers. They show the decode — a cart drives data
+whenever /RD is low and its own window matches, `/CE` plays no part — and they answer
+our `$18C1–$18C7` question. Analysis: [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md).
 
 Two lessons we should keep:
 
