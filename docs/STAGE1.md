@@ -95,9 +95,9 @@ Two signals the FPGA doesn't drive, to save pins (see §4): the data translator'
 | # | decision | why |
 |---|---|---|
 | 1 | **Address decode outside the FPGA.** One 8-bit comparator (74HCT688, on the bus's 5 V side) matches A20–A16 = `1 0000` and outputs /SEL | banks `$80–$87` all share A20–A16; saves 5 FPGA pins. These banks are where the CD-ROM² unit's own RAM lives, so a console without one leaves them empty. A HuCard can't answer there either: its /CE (slot pin 24) **is** the CPU's A20, so a card is only selected when A20 = 0 ([HuCard pinout](datasheets/pcedev-wiki-HuCard_pinout-2026-11-19.txt)) |
-| 2 | **Data bus through a dual-supply translator, 74LVC8T245** (A side 3.3 V, B side 5 V), **not** a 74LVC245 | a 74LVC245 at 3.3 V would drive only ~3.3 V highs onto a 5 V bus. The HuC6280 manual we have gives **no input thresholds**; if its inputs are CMOS-level (often 0.7 × 5 V = 3.5 V), 3.3 V is not a reliable high. The 8T245 drives full 5 V levels both ways |
+| 2 | **Data bus through a dual-supply translator, 74LVC8T245**, its **A side (VCCA = 5 V) facing the console** and B side (3.3 V) the FPGA, **not** a 74LVC245 | a 74LVC245 at 3.3 V would drive only ~3.3 V highs onto a 5 V bus. The HuC6280 manual we have gives **no input thresholds**; if its inputs are CMOS-level (often 0.7 × 5 V = 3.5 V), 3.3 V is not a reliable high. The 8T245 drives full 5 V levels both ways |
 | 3 | **Address and strobe inputs through 74LVC245A at 3.3 V**, fixed direction bus → FPGA | its inputs tolerate 5 V; one supply; 3 chips cover 20 lines |
-| 4 | **Translator direction = /RD, enable = /SEL**, straight from the bus | the FPGA can only drive the bus during a read of our banks. Saves 2 FPGA pins. Small series resistors (33 Ω) on the FPGA-side data lines limit current during the few ns when direction flips |
+| 4 | **Translator direction = /RD, enable = /SEL**, straight from the bus | the 8T245's DIR and /OE are referenced to VCCA, so with the 5 V side on A the console's /RD and the decoder's 5 V output drive them directly, no inverter: /RD high = A→B (bus to FPGA), /RD low = B→A (FPGA drives the bus). The FPGA can only drive the bus during a read of our banks. Saves 2 FPGA pins. Small series resistors (33 Ω) on the FPGA-side data lines limit current during the few ns when direction flips |
 | 5 | **Bus-side 5 V comes from the console's +5A**, the Tang runs from its own USB-C | when the console is off, everything touching its bus is unpowered and can't back-feed it. The 8T245 disables its outputs when either supply is off. **Open:** +5A is the analog video supply; our draw is small, but watch for video noise |
 | 6 | **No connection between the Tang's USB 5 V and the console** | two supplies, one shared ground |
 | 7 | **The FPGA's data pins stay inputs until configured**, and the data translator is enabled only by /SEL | an unconfigured FPGA can't drive the bus |
@@ -113,12 +113,22 @@ Two signals the FPGA doesn't drive, to save pins (see §4): the data translator'
 | Does drawing from +5A disturb the video? | look at the picture with the board fitted |
 | Where does the 3×23 female header come from? | any 0.1" 3-row female header; check the console's pin length and the shroud clearance |
 
-## 6. What happens next
+## 6. The schematic
 
-1. **The schematic, generated from data.** A script turns the pin assignments
-   into a KiCad schematic. A checker proves every port pin lands on the right
-   net, every FPGA pin is used once and is legal, and each translator's
-   direction is right. Then KiCad's ERC. You review it in KiCad.
+[`hw/stage1/pce_exp_stage1.kicad_sch`](../hw/stage1/pce_exp_stage1.kicad_sch) is **generated** from
+[`hw/stage1/design.py`](../hw/stage1/design.py) by `python tools/gen_stage1.py`. Edit the data, not
+the schematic. 33 parts: the port (J1), the Tang headers (J2, J3), the decoder (U1), the data
+translator (U2), three input translators (U3–U5), 8 series resistors, 8 capacitors, 6 test points.
+
+`python tools/check_stage1.py --selftest` asks **KiCad itself** for the netlist and checks it:
+every pin on its designed net, the rules re-derived from the CSVs (port pins, Tang pins we may use,
+supplies, translator directions, the decoder, 5 V never wired to the FPGA, FPGA nets point-to-point),
+and KiCad's ERC. Its self-test breaks the netlist nine ways and must catch each. On its first run it
+caught a real generator bug: resistors placed 7.62 mm apart touched pins and merged eight data nets.
+
+## 7. What happens next
+
+1. **Schematic review** (you, in KiCad): open `hw/stage1/pce_exp_stage1.kicad_pro`.
 2. **Layout** via PCB HERO: a small 2-layer board, Tang Nano 20K on sockets,
    the 3×23 header at the edge.
 3. **The FPGA image**: a RAM responder with a test HuCard program.

@@ -51,6 +51,18 @@ row a/b/c; top row = pin 1.
 **Pass:** every row beeps where it should and nowhere else. **Fail:** stop,
 correct the pinout, re-run `tools/ext_bus.py`.
 
+### T1b: The footprint mates the right way round (paper, console unplugged)
+
+**Answers:** does our 3×23 footprint face the console the right way? A mirrored
+connector footprint is the classic way to kill a first board.
+
+**How:** print the board's connector area 1:1 (KiCad: File → Print, scale 1:1,
+silkscreen and pads, pad numbers on). Push a pin through pad **a1** (the square
+pad) and hold the sheet as the board will sit when plugged in. The pin must
+land on the console's **a1** (AudioL), which T1 identified.
+
+**Pass:** a1 on a1, and c23 on c23. **Fail:** mirror the footprint.
+
 ### T2: +5A is healthy (multimeter + scope, console on, game running)
 
 **Answers:** can the bus-side translators run from +5A (STAGE1 decision 5)?
