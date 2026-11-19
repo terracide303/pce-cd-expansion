@@ -4,6 +4,8 @@ An open-source CD-ROM² / Super CD-ROM² emulator that plugs into the rear expan
 
 **Status: future project. Nothing is built.** The first document is the design hand-off from a planning chat on 2026-11-19: [docs/HANDOFF-2026-11-19.md](docs/HANDOFF-2026-11-19.md).
 
+All notes so far: [hand-off 2026-11-19](docs/HANDOFF-2026-11-19.md) and [earlier notes 2026-11-04](docs/EARLIER-NOTES-2026-11-04.md) (SuperGrafx support, PSG shadow path, RAM conflict, open questions). Repo is private.
+
 ## Staged plan (from the hand-off)
 1. De-risk: the 20K on the expansion port as a 64 KB RAM responder at banks $80-$87; memory test from a HuCard.
 2. CD-only build: bus interface, CD controller, ADPCM, CD-DA, RAM, microSD link via the companion MCU. Get games booting.
