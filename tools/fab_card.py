@@ -12,8 +12,10 @@ Writes hw/card/fab/:
 
 Refuses to write anything if KiCad's DRC (zones refilled, the board's own rules,
 which are the JLCPCB/PCBWay standard floor) finds an unconnected item, a schematic
-difference, or a violation not on the ACCEPTED list below. The order settings are
-in docs/ORDER.md.
+difference, or a violation not on the ACCEPTED list below; or if
+tools/fabcheck_card.py finds a via in an SMD pad, a via that is not 0.45/0.2 mm,
+or the ground finger's pre-routed copper missing. The order settings are in
+docs/ORDER.md.
 """
 import collections, csv, io, json, os, pathlib, shutil, subprocess, sys, tempfile, zipfile
 
@@ -22,6 +24,7 @@ CARD = ROOT / "hw" / "card"
 PCB, SCH = CARD / "pce_card.kicad_pcb", CARD / "pce_card.kicad_sch"
 OUT = CARD / "fab"
 KICAD_CLI = os.environ.get("KICAD_CLI", r"C:\Users\terra\AppData\Local\Programs\KiCad\10.0\bin\kicad-cli.exe")
+KICAD_PY = os.environ.get("KICAD_PY", r"C:\Users\terra\AppData\Local\Programs\KiCad\10.0\bin\python.exe")
 LAYERS = "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts"
 
 # Violations that are not manufacturing problems, each with why. Matched on the
@@ -70,6 +73,19 @@ def check(tmp):
         left[v["type"]] += 1
     if left:
         problems.append("violations: " + ", ".join(f"{n} {t}" for t, n in left.most_common()))
+    # what DRC does not check (tools/fabcheck_card.py, in KiCad's Python)
+    r = subprocess.run([KICAD_PY, str(ROOT / "tools" / "fabcheck_card.py"), str(PCB)], capture_output=True, text=True)
+    line = next((l for l in r.stdout.splitlines() if l.startswith("{")), None)
+    if not line:
+        problems.append(f"fabcheck_card.py failed: {r.stderr.strip()[-300:]}")
+    else:
+        f = json.loads(line)
+        if f["vias_in_pads"]:
+            problems.append(f"{len(f['vias_in_pads'])} SMD pad(s) with a via in them: {', '.join(f['vias_in_pads'][:10])}")
+        if set(f["via_sizes"]) - {"0.45/0.2"}:
+            problems.append(f"via sizes other than 0.45/0.2 mm: {f['via_sizes']}")
+        if f["locked_ground"] < 4:
+            problems.append("the pre-routed ground-finger copper is missing (tools/preroute_card.py)")
     return d, report, problems
 
 
