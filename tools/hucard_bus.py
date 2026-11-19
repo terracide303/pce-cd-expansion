@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The HuCard slot, as data, parsed from the one committed source.
+"""The HuCard slot, as data, cross-checked between two committed sources.
 
     python tools/hucard_bus.py            # check the slot is complete, write docs/hucard_pinout.csv
     python tools/hucard_bus.py --selftest # prove the checks catch a wrong pin first
@@ -8,15 +8,20 @@ ONE SOURCE OF TRUTH. docs/hucard_pinout.csv is GENERATED here; the pin budget,
 the schematic generator and the board checker read that file. Nobody types a pin
 number twice.
 
-ONE SOURCE ONLY, and it says so:
-  docs/datasheets/pcedev-wiki-HuCard_pinout-2026-11-19.txt (PCEdev wiki, fetched
-  2026-11-19). Unlike the expansion port, there is no second committed source for
-  the card edge yet: the console schematic's CN202 has not been transcribed, and
-  nobody has put a meter on a slot. So this file can only check that the pinout is
-  STRUCTURALLY complete (all 21 address lines, all 8 data lines, both strobes,
-  power, ground once each) -- not that it matches the console. That comparison is
-  TEST_PLAN T1c: continuity from these card fingers to the already-verified rear
-  port pins, which is the cross-check this file does not have.
+TWO SOURCES, BOTH COMMITTED:
+  A. docs/datasheets/pcedev-wiki-HuCard_pinout-2026-11-19.txt (PCEdev wiki,
+     fetched 2026-11-19), parsed below.
+  B. docs/datasheets/PC_Engine_Schematics_r1.2.pdf, sheet 5, CN202 "HuCARD",
+     transcribed by eye from the 400 dpi crop in
+     docs/datasheets/evidence/cn202-hucard-slot.png (SCHEMATIC_CN202 below).
+  Every pin is compared. A STRUCTURAL check alone (each signal once, right
+  direction) cannot see two address lines swapped -- both stay inputs, both appear
+  once -- so the cross-check is what catches that; --selftest proves it.
+
+  One thing only the wiki says: that pin 24 IS the CPU's A20. The schematic puts
+  pin 24 on a net labelled XCE without showing its source. TEST_PLAN T4 confirms it
+  on the scope. Neither source is a measurement: T1c (card fingers <-> the verified
+  rear port) is still the physical check.
 
 Direction is the CARD's view, from the wiki's arrows:
   <-  console drives it (card input)      ->  card drives it (card output)
@@ -49,6 +54,29 @@ NOTES = {
     "HSM": "high speed mode, asserted by the CPU at 7.16 MHz",
     "GND": "the only ground on the connector",
 }
+
+
+# Source B, as printed on the schematic (sheet 5, CN202), pins 1..38.
+SCHEMATIC_CN202 = [None,
+    "XCHECK", "AUDIO-C", "A19", "A16", "A15", "A12", "A7", "A6", "A5", "A4",
+    "A3", "A2", "A1", "A0", "D0", "D1", "D2", "GND", "D3", "D4",
+    "D5", "D6", "D7", "XCE", "A10", "RD", "A11", "A9", "A8", "A13",
+    "A14", "A17", "A18", "WR", "HSM", "XRESET", "XIRQ2", "+5V"]
+# Schematic name -> canonical name (the same names the wiki parse produces).
+SCHEMATIC_ALIAS = {"XCHECK": "/CD", "AUDIO-C": "AUDIO_IN", "XCE": "A20", "RD": "/RD", "WR": "/WR",
+                   "XRESET": "/RST", "XIRQ2": "/IRQ2"}
+
+
+def cross_check(pins, schematic=SCHEMATIC_CN202):
+    problems = []
+    if len(schematic) != 39:
+        return [f"schematic transcription has {len(schematic) - 1} pins, expected 38"]
+    for n in range(1, 39):
+        want = SCHEMATIC_ALIAS.get(schematic[n], schematic[n])
+        got = pins.get(n, {}).get("signal")
+        if got != want:
+            problems.append(f"pin {n}: wiki says {got}, schematic says {schematic[n]} (= {want})")
+    return problems
 
 
 def canonical(text):
@@ -108,7 +136,10 @@ def selftest(pins):
     import copy
     cases = []
     p = copy.deepcopy(pins); p[14]["signal"], p[15]["signal"] = p[15]["signal"], p[14]["signal"]
-    cases.append(("A0 and A1 swapped", p))
+    cases.append(("A0 and D0 swapped (pins 14, 15)", p))
+    # Two address lines swapped: structurally perfect, so only the cross-check sees it.
+    p = copy.deepcopy(pins); p[13]["signal"], p[14]["signal"] = p[14]["signal"], p[13]["signal"]
+    cases.append(("A1 and A0 swapped (pins 13, 14)", p))
     p = copy.deepcopy(pins); p[26]["signal"] = "A0"
     cases.append(("pin 26 /RD misread as A0", p))
     p = copy.deepcopy(pins); del p[38]
@@ -120,8 +151,11 @@ def selftest(pins):
     ok = True
     print("SELFTEST -- each line must say CAUGHT")
     for label, broken in cases:
-        got = bool(check(broken)); ok &= got
+        got = bool(check(broken) or cross_check(broken)); ok &= got
         print(f"  {'CAUGHT' if got else 'MISSED'}  {label}")
+    sch = list(SCHEMATIC_CN202); sch[30], sch[31] = sch[31], sch[30]
+    got = bool(cross_check(pins, sch)); ok &= got
+    print(f"  {'CAUGHT' if got else 'MISSED'}  the schematic side changed (A13 <-> A14)")
     return ok
 
 
@@ -131,7 +165,7 @@ def main():
         if not selftest(pins):
             sys.exit("SELFTEST FAILED")
         print()
-    problems = check(pins)
+    problems = check(pins) + cross_check(pins)
     if problems:
         print(f"{len(problems)} PROBLEM(S) with the parsed card edge:")
         for p in problems:
@@ -141,14 +175,16 @@ def main():
         p["note"] = NOTES.get(p["signal"], "")
     with OUT.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f, lineterminator="\n")   # LF on every platform: the CSV stays byte-identical
-        w.writerow(["pin", "signal", "card_direction", "wiki_text", "note"])
+        w.writerow(["pin", "signal", "card_direction", "wiki_text", "note", "schematic_name"])
         for n in sorted(pins):
             p = pins[n]
-            w.writerow([p["pin"], p["signal"], p["direction"], p["wiki_text"], p["note"]])
+            w.writerow([p["pin"], p["signal"], p["direction"], p["wiki_text"], p["note"], SCHEMATIC_CN202[n]])
     addr = sum(1 for p in pins.values() if re.fullmatch(r"A\d+", p["signal"]))
     data = sum(1 for p in pins.values() if re.fullmatch(r"D\d+", p["signal"]))
     print(f"card edge is structurally complete: {addr} address, {data} data, "
-          f"both strobes, +5V, ground; wrote {OUT.relative_to(ROOT).as_posix()}")
+          f"both strobes, +5V, ground")
+    print(f"the wiki and the console schematic (CN202) agree on all 38 pins; "
+          f"wrote {OUT.relative_to(ROOT).as_posix()}")
     print("not on this connector: K7, RDY, DCK (a clock), /NMI, stereo audio")
 
 

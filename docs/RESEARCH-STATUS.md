@@ -97,10 +97,12 @@ The register map is a *shape*, not a *specification*. What nobody has written do
 - **A contradiction in our own docs to resolve**: [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md)
   says the register block is `$1FF800–$1FF8FF` (256 bytes) while
   [SOURCES_REVIEW.md](SOURCES_REVIEW.md), quoting the HuC6280 manual, says
-  `$1FF800–$1FFBFF` (1 KB, "reserved for extension"). And `$1FF8C0–C7` is answered
-  by **both** the CD unit's signature and the Super System Card — so on real
-  hardware two devices could drive the same read; who wins when both are present is
-  unknown (moot for us, not for anyone with a real CD unit).
+  `$1FF800–$1FFBFF` (1 KB, "reserved for extension"). The core decodes 256 bytes;
+  a board decoding the full 1 KB loses nothing. On `$1FF8C0–C7`: the MiSTer core
+  answers it from `cd.vhd`, but that core emulates the CD unit *and* the Super System
+  Card in one block, so it is not evidence that a real CD unit answers there. The
+  EverDrive puts it in the card (`huc_ssc.sv`). **Most likely only the card answers**;
+  a logic analyser on a real CD unit without an SSC settles it.
 - **Arcade Card**: "supported" by the shipping product, 2 MB of RAM, and *nothing*
   in our docs — not even its registers.
 - **Save states and backup-RAM persistence**: the lock/unlock semantics are in

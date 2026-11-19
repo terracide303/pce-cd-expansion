@@ -12,9 +12,9 @@ RAM at bank `$80` and reads it back.
 program, so the test needs no flash HuCard, no System Card, no console opening and
 no second device. It plugs into the slot and reports on screen.
 
-Status: **design, nothing ordered.** The card edge's pinout is from one source
-(`docs/hucard_pinout.csv`, parsed by `tools/hucard_bus.py` from the committed
-wiki text) — TEST_PLAN T1c is the second source.
+Status: **design, nothing ordered.** The card edge's pinout is from two sources
+(`docs/hucard_pinout.csv`, by `tools/hucard_bus.py`: the committed wiki text against
+the console schematic's CN202, all 38 pins agree) — TEST_PLAN T1c is the physical check.
 
 ---
 
