@@ -43,7 +43,7 @@ SLOT = 8.6                          # how deep the slot takes the card
 # lines >= 0.15 mm and text >= 1.0 mm (JLC; PCBWay 0.8). We hold the stricter of each.
 FAB = {"name": "JLCPCB or PCBWay, 4-layer standard (no surcharge)", "track": 0.1, "clearance": 0.1,
        "via_hole": 0.2, "via_dia": 0.45, "hole_to_hole": 0.25, "edge": 0.3, "hole_clearance": 0.2,
-       "silk_line": 0.15, "silk_text": 1.0}
+       "silk_line": 0.15, "silk_text": 1.0, "via_pad_clearance": 0.1}
 DESIGN = {"track": 0.1, "clearance": 0.1, "default_track": 0.2, "via_dia": 0.45, "via_drill": 0.2,
           "bga_via_dia": 0.45, "bga_via_drill": 0.2, "edge": 0.3, "power_track": 0.3}
 
@@ -227,6 +227,10 @@ def write_rules():
         "min_via_annular_width": 0.1,
         "min_text_height": FAB["silk_text"], "min_text_thickness": FAB["silk_line"],
     })
+    # No via inside an SMD pad: an open via there wicks solder away from the joint,
+    # and filling and capping it is an extra-cost option at both fabs. The router
+    # (KiCadRoutingTools) reads this from the project for every step.
+    pro.setdefault("kicad_routing_tools", {})["same_net_pad_clearance"] = FAB["via_pad_clearance"]
     power = ["+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP", "+3V3", "+2V5", "+1V1", "+1V1_RP", "PWR_FILTERED_2V5", "GND"]
     pro["net_settings"] = {
         "classes": [

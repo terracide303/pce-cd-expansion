@@ -14,6 +14,8 @@ general method, and the lessons behind each step, are in PCB HERO's playbook
 | 5b. silkscreen | `... python.exe tools/silk_card.py` | every reference beside its own part, closer to it than to any other labelled part, never under a part, touching nothing; else to the Fab layer |
 | 5c. artwork | `... python.exe tools/art_card.py` | front text: PC Engine / TurboGrafx, CD-ROM² (small raised 2), TERRACIDE303, rev; stroke font only, re-runnable |
 | 5d. 3D models | `... python.exe tools/models_card.py` | models for parts whose footprints have none (microSD, buttons, oscillator), aligned to our pads; visual only |
+| 5e. pre-route | `... python.exe tools/preroute_card.py` | the only ground finger (pin 18) gets a 0.5 mm track and two vias into the GND plane, locked, before any signal |
+| 5f. part numbers | `... python.exe tools/sync_fields_card.py` | LCSC fields copied from the design data to the footprints (when they change after placement) |
 | 6. parity + DRC | `kicad-cli pcb drc --schematic-parity hw/card/pce_card.kicad_pcb` | board = schematic |
 | 7. **look at it** | `python ../PCBHero/scripts/snapshot.py hw/card/pce_card.kicad_pcb`, or the panel's Viewer | answer the checklist in writing; fix what the picture shows |
 | 8. route | from `../PCBHero/tools/KiCadRoutingTools`: `python -X utf8 ../../scripts/autoroute_pinned.py in.kicad_pcb out.kicad_pcb` (or the panel) | planes, BGA fanout, every net, at the standard fab floor |
@@ -43,3 +45,10 @@ in KiCad, stop running them and edit in KiCad (or teach `place_card.py` the chan
 - **A script that loads a KiCad file must not need a click.** A missing font
   makes KiCad's Python open a dialog and wait; `place_card.py` strips font
   names from the borrowed board before loading it.
+- **No via in a pad.** The first standard-floor route put 217 via holes in SMD
+  pads (solder wicks down an open via; filling them costs extra). The project
+  records `kicad_routing_tools.same_net_pad_clearance = 0.1`, which every router
+  step reads.
+- **A pin that matters gets its copper by rule, before the router.** The one
+  ground finger was the router's last open net twice; now it is pre-routed and
+  locked.

@@ -259,6 +259,9 @@
   "cvpcb": {
     "equivalence_files": []
   },
+  "kicad_routing_tools": {
+    "same_net_pad_clearance": 0.1
+  },
   "libraries": {
     "pinned_footprint_libs": [],
     "pinned_symbol_libs": []
