@@ -28,7 +28,7 @@ search of the OCR'd `.txt` extracts can't see. Plus `docs/`, `docs/archive/`,
 
 The pin timing isn't in the documents, but the **MiSTer core's cycle-accurate CPU
 model** gives the bus structure: read data latched ~140 ns after the address
-changes ([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §1). The scope (T3) confirms it
+changes ([STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §1). The scope (T3) confirms it
 on the real chip.
 The simulation says this board needs the console to sample read data
 ≥ 55 ns after the address changes ([STAGE1.md](STAGE1.md) §7).

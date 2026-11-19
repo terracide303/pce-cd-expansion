@@ -20,7 +20,7 @@ the console schematic's CN202, all 38 pins agree) — TEST_PLAN T1c is the physi
 
 ## 1. The connector
 
-38 fingers, all of them in [`docs/hucard_pinout.csv`](hucard_pinout.csv). What
+38 fingers, all of them in [`docs/hucard_pinout.csv`](../hucard_pinout.csv). What
 reaches the FPGA for stage 1:
 
 | needed | on the card edge |
@@ -258,7 +258,7 @@ what the device must do *first*, before any CD logic:
 - a **System Card / Super System Card BIOS is 256 KB**, and the CPU fetches it
   **linearly** across `$000000–$03FFFF` — there is no banking to hide behind, because
   the address the CPU puts out *is* the ROM offset (`huc_ssc` in
-  [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §4 decodes it exactly that
+  [REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md) §4 decodes it exactly that
   way);
 - 256 KB needs **A0–A17**, i.e. 18 pins, plus 8 data, plus /RD and /WR = **28**, before
   a single select. That is already **four more than the 24 safe pins**, and there is

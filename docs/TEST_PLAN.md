@@ -1,7 +1,7 @@
 # Test plan: stage 1 (the RAM responder)
 
-Every open question in [STAGE1-CARD.md](STAGE1-CARD.md) §9 and
-[STAGE1.md](STAGE1.md) §5 gets a test here, in the order it's needed. The tests
+Every open question in [STAGE1-CARD.md](archive/STAGE1-CARD.md) §9 and
+[STAGE1.md](archive/STAGE1.md) §5 gets a test here, in the order it's needed. The tests
 before T8 need **no working board** and gate the order: T1c, T1d, T3 and T5 only
 need the console, a meter, a scope and a real HuCard. T6–T10 need the board.
 
@@ -11,8 +11,8 @@ with a HuCard game, a real HuCard (to measure the card edge against), the Tang
 Nano 20K.
 
 **Two boards, one plan.** T1c, T2, T3, T4b, T5, T8 and T9 run on the **card-edge**
-board ([STAGE1-CARD.md](STAGE1-CARD.md)); T1, T1b, T6, T7 and T10 were written for
-the **rear-port** board ([STAGE1.md](STAGE1.md)), which is now stage 1b. T1b is a
+board ([STAGE1-CARD.md](archive/STAGE1-CARD.md)); T1, T1b, T6, T7 and T10 were written for
+the **rear-port** board ([STAGE1.md](archive/STAGE1.md)), which is now stage 1b. T1b is a
 card test too once the carrier exists: print the footprint 1:1 and lay a real
 HuCard on it.
 
@@ -104,7 +104,7 @@ tool's structural checks will not catch it, which is exactly why this test exist
 ### T1d: The card's physical dimensions (caliper, a real HuCard, console unplugged)
 
 **Answers:** whether the reference numbers in
-[STAGE1-CARD.md](STAGE1-CARD.md) §1 hold on a real card. They come from a working
+[STAGE1-CARD.md](archive/STAGE1-CARD.md) §1 hold on a real card. They come from a working
 repro board and the slot's drawing, not from a caliper, and the carrier cannot be
 ordered on someone else's geometry.
 

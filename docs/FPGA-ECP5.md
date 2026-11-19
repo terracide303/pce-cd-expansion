@@ -53,7 +53,7 @@ inspiration board, so the 25F board's pinout carries over.
 
 **HuCard dimensions, 54.1 × 85.4 mm** (owner, 2026-11-19), so the gold fingers
 are exactly where a real card has them. The 9 mm extension
-([STAGE1-CARD.md](STAGE1-CARD.md) §1) stays an allowance, not the plan: an FPGA,
+([STAGE1-CARD.md](archive/STAGE1-CARD.md) §1) stays an allowance, not the plan: an FPGA,
 SDRAM and flash fit on 65 × 30 mm on the Icepi Zero.
 
 ## To check before the schematic

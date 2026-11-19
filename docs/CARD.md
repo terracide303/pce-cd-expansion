@@ -2,7 +2,7 @@
 
 Decided 2026-11-19 with the owner. This is the board the project ships: one
 HuCard-sized card that is the flash cart and, later, the whole CD-ROM² system,
-EverDrive style. It replaces boards A and B ([CARRIER-ARCH.md](CARRIER-ARCH.md)).
+EverDrive style. It replaces boards A and B ([CARRIER-ARCH.md](archive/CARRIER-ARCH.md)).
 
 ## Status (2026-11-19)
 
@@ -26,7 +26,7 @@ python tools/check_card.py --selftest
 | question | answer |
 |---|---|
 | FPGA | Lattice ECP5 **LFE5U-45F-6BG256**, on the card ([FPGA-ECP5.md](FPGA-ECP5.md)) |
-| size | **HuCard, 54.1 × 85.4 mm**, fingers exactly as a real card ([STAGE1-CARD.md](STAGE1-CARD.md) §1) |
+| size | **HuCard, 54.1 × 85.4 mm**, fingers exactly as a real card ([STAGE1-CARD.md](archive/STAGE1-CARD.md) §1) |
 | video out | **none**: the console's own AV output |
 | SD card, menu, loading | **RP2040 companion** (FPGA-Companion firmware, as in the MiSTle family) |
 | programming | **USB-C + FT231X** on-board USB-JTAG, openFPGALoader |

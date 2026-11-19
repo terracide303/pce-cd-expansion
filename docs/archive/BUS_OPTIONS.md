@@ -34,7 +34,7 @@ It gains **a real 5 V supply** and an **outbound IRQ2**.
 
 ## 2. Where the CD hardware has to live
 
-From [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §2, the windows a CD emulator
+From [STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §2, the windows a CD emulator
 must answer:
 
 | what | physical | A20 |
@@ -51,7 +51,7 @@ never selects it for.
 
 That is not a new problem and not a geometry problem: the rear port has no chip
 select either ("the CPU has no chip enable for this block, reserved for
-extension", HuC6280 manual p. 12 — [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §2).
+extension", HuC6280 manual p. 12 — [STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §2).
 Both boards decode `A20–A8` themselves and drive the data bus on their own
 authority. On a console with no CD unit, nothing else answers there.
 
@@ -80,7 +80,7 @@ that act is identical whether it comes from the card or from the port.
 | **mono audio** | The card has one AUDIO IN pin, mixed into both channels; CD-DA through the console would be mono. **Acceptable only because phase 2 already outputs its own audio over HDMI/I2S** — see [EARLIER-NOTES-2026-11-04.md](EARLIER-NOTES-2026-11-04.md) ("the console's own audio is simply not used"). If stereo through the console's AV out ever matters, that is the port's job. |
 | **no K7** | CD presence is port pin b2. Not needed **if our own firmware** stands in for the System Card. But the BIOS is user-supplied (a real System Card image), and the MiSTer core's only CD-presence signal is K7 (`pce_top.vhd` line 293), so **the real BIOS may check it**, as may a game that polls port K. **Unmeasured**: check the BIOS's boot code first (it's one image, not many discs), then a few discs' loaders. If it checks, the EverDrive's answer applies: it runs the real BIOS on the card alone, so read how it handles K7 before assuming the port board is needed. |
 | **no RDY** | wait states are unavailable, so the data must be ready in the cycle. The sim says it is, with ~85 ns to spare against the model's ~140 ns latch point ([STAGE1.md](STAGE1.md) §7). |
-| **driving outside `/CE` is undocumented** | the console's documents don't say it is tolerated, but a shipping cart does it ([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2); it is the same decode the port needs, but it is worth one scope probe before the carrier is ordered (TEST_PLAN T4b). |
+| **driving outside `/CE` is undocumented** | the console's documents don't say it is tolerated, but a shipping cart does it ([REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md) §2); it is the same decode the port needs, but it is worth one scope probe before the carrier is ordered (TEST_PLAN T4b). |
 | **region data order** | the wiki says D0–D7 ascend on a PC Engine and descend on a TurboGrafx-16. **Answered, and it costs nothing**: the same card serves both, because the difference is a per-byte **bit reversal** — HuConv, the tool that prepares images for the repro cards, emits a TG16 image by mapping bit 0↔7 … 3↔4 (`HuCONV_v1.5/huconv.py` lines 142–152). In the FPGA that is a free mapping, or a setting at load time. |
 
 ## 6. The pin budget is not improved, and nobody should claim it is
@@ -90,7 +90,7 @@ connector: 21 address + 8 data + 2 strobes will not fit either way, so the
 external decoder (74HCT688) that cuts the address down to a 13-bit window stays.
 Swapping 69 pins for 38 changes what the board plugs into, not what the FPGA can
 see. Stage 2 gets worse (34–36 pins against 28 safe,
-[STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §7) — and the flash-cart role needs
+[STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §7) — and the flash-cart role needs
 ~20 address lines, which is the module decision in
 [STAGE1-CARD.md](STAGE1-CARD.md) §7.
 
@@ -134,7 +134,7 @@ What that settles for us:
 
 | question | answer |
 |---|---|
-| may a card answer `$1FF800` and drive `$100000`? (T4b) | **yes, in the shipping product and in its source**: `bus_oe = cpu.oe & (own windows)`, `/CE` not involved ([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2). T4b now checks our decode and timing only |
+| may a card answer `$1FF800` and drive `$100000`? (T4b) | **yes, in the shipping product and in its source**: `bus_oe = cpu.oe & (own windows)`, `/CE` not involved ([REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md) §2). T4b now checks our decode and timing only |
 | is the card the right host for the CD logic? | yes, which is the decision this document records |
 | does a card need a System Card? | no — the device is the System Card, and its BIOS is a file |
 | stereo CD-DA from a card alone? | **no** — they say so themselves: "CD and hucard audio doesn't work via RF output" because of the mixing circuit, and they sell the **EDFX**, a **stereo expansion board**, alongside it |
@@ -145,7 +145,7 @@ Better than the product page: the cartridges' **development sources are public a
 MIT licensed** ([krikzz/turbo-ed-pro-pub](https://github.com/krikzz/turbo-ed-pro-pub)),
 including the bus layer and the mappers. They show the decode — a cart drives data
 whenever /RD is low and its own window matches, `/CE` plays no part — and they answer
-our `$18C1–$18C7` question. Analysis: [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md).
+our `$18C1–$18C7` question. Analysis: [REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md).
 
 Two lessons we should keep:
 

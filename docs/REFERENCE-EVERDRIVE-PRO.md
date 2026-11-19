@@ -22,13 +22,13 @@ mux like any other window — so the *interface* is public and the CD logic is n
 Three things to copy or deliberately not copy:
 
 1. **The FPGA owns the data buffer**: `TG_DDIR` and `TG_DOEn` are outputs. Our
-   [STAGE1.md](STAGE1.md) decision 4 saves two pins by deriving DIR from `/RD` and
+   [STAGE1.md](archive/STAGE1.md) decision 4 saves two pins by deriving DIR from `/RD` and
    `/OE` from the select. With 24 safe pins that is the right trade here; with a
    bigger module the reference's way is better, because the FPGA tri-states in the
    exact cycle it means to.
 2. **Region is eight wires of mapping, in the FPGA.** `cpu_dati_tg` and
    `cpu_dato_tg` are the PC Engine bytes with the bits reversed. That is the
-   [BUS_OPTIONS.md](BUS_OPTIONS.md) §5 finding, implemented: no jumper, no second
+   [BUS_OPTIONS.md](archive/BUS_OPTIONS.md) §5 finding, implemented: no jumper, no second
    board. Their `region` input just picks which side to present.
 3. **The card drives IRQ2 and /RST too** (`TG_IRQ2n`, `TG_RSTFn`), not only data.
 
@@ -42,7 +42,7 @@ assign bus_oe = cpu.oe & (reg_ce | huc_ce | exp_ce | cc_ce);
 
 The cart drives the data bus **whenever /RD is low and one of its own decoded
 windows matches** — the console's `/CE` (which is only A20) plays no part. That is
-the assumption [BUS_OPTIONS.md](BUS_OPTIONS.md) §2 needed and no document stated.
+the assumption [BUS_OPTIONS.md](archive/BUS_OPTIONS.md) §2 needed and no document stated.
 The windows it answers, from source:
 
 | window | physical | answered by | in `top.sv`'s decode |
@@ -86,7 +86,7 @@ now, and the values are testable against a real card.
 ## 4. The mappers are here, and one of them is the gap we had
 
 `huc/` contains `huc_std` (plain), `huc_sf2` (**Street Fighter II**, the mapper
-[SOURCES_REVIEW.md](SOURCES_REVIEW.md) names as PCEHeroTN's likely SF2 bug),
+[SOURCES_REVIEW.md](archive/SOURCES_REVIEW.md) names as PCEHeroTN's likely SF2 bug),
 `huc_pop` (Populous), `huc_384` (dual 256+128 KB), `huc_ssc` (Super System Card),
 `huc_sys` (the menu's own mapper), `huc_nom` (no mapper). MIT, so a flash-cart build
 can start from these with attribution rather than from a disassembly.

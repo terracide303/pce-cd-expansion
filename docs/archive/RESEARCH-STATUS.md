@@ -14,7 +14,7 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 | Card mechanics/geometry | **settled on paper** from a repro board + slot drawing | T1d with a caliper |
 | Stage 1 board (decode, buffers, pin map) | **designed, not built** ([STAGE1-CARD.md](STAGE1-CARD.md)) | schematic + PCB + a booting test ROM |
 | Stage 1 timing | **modelled**, ~85 ns margin | T3 scope, T4b, T8 on hardware |
-| Stage 2 memory map + registers | **specified from the MiSTer core** ([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md)) | verified against a real BIOS |
+| Stage 2 memory map + registers | **specified from the MiSTer core** ([STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md)) | verified against a real BIOS |
 | Stage 2 behaviour below the registers | **absent** — §4 | a BIOS-level behaviour spec |
 | Stage 2 audio | **options known, no decision** — §5 | a chosen chip and a chosen output path |
 | Storage / how images get in | **absent, and mechanical** — §5 | a socket plan and an image format |
@@ -27,17 +27,17 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 - **The card slot is the right host**, and it is not speculative: a product ships
   this architecture and its sources are MIT ([BUS_OPTIONS.md](BUS_OPTIONS.md) §10,
-  [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md)).
+  [REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md)).
 - **A cartridge may drive windows above `A20`**: `bus_oe = cpu.oe & (own windows)`,
   no `/CE` involved. The windows a shipping cart answers are listed in
-  [REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §2.
+  [REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md) §2.
 - **The CD system's address map**: registers `$1FF800`, work RAM `$100000–$10FFFF`,
   backup RAM `$1EE000–$1EE7FF`, Super System Card RAM `$0D0000–$0FFFFF`
-  ([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §2), each independently confirmed in
+  ([STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §2), each independently confirmed in
   the EverDrive sources.
 - **The `$18C0–$18C7` signature bytes**, exact values, and the fact that the **card**
-  answers them ([REFERENCE-EVERDRIVE-PRO.md](REFERENCE-EVERDRIVE-PRO.md) §3).
-- **The register set and its read side effects** ([STAGE2_REFERENCE.md](STAGE2_REFERENCE.md) §4).
+  answers them ([REFERENCE-EVERDRIVE-PRO.md](../REFERENCE-EVERDRIVE-PRO.md) §3).
+- **The register set and its read side effects** ([STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md) §4).
 - **Region difference = one bit reversal per byte**, in the FPGA, no hardware
   change (two independent sources: HuConv and `top.sv`).
 - **Card geometry**: 54.1 × 85.4 mm, 1.6 mm board, 1.27 mm pitch, 0.75 mm fingers,
@@ -65,7 +65,7 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
    CABGA256, soldered directly on the card.** Inspiration board:
    [cheyao/icepi-zero](https://github.com/cheyao/icepi-zero) (ECP5 25F, same package,
    Solderpad Hardware v2.1 = Apache-2.0 compatible, KiCad sources). Details and
-   consequences: [FPGA-ECP5.md](FPGA-ECP5.md). The Tang decision below is kept for
+   consequences: [FPGA-ECP5.md](../FPGA-ECP5.md). The Tang decision below is kept for
    the record and still covers board A as a bench test.
 
    **Earlier 2026-11-19 (owner): the Tang Nano 20K stays.** Bigger modules cost too
@@ -110,7 +110,7 @@ The register map is a *shape*, not a *specification*. What nobody has written do
   and ADPCM RAM is undescribed.
 - **IRQ2 electrical behaviour**: open-drain, shared, and nothing recorded about the
   console's pull-up or who else drives it.
-- **A contradiction in our own docs to resolve**: [STAGE2_REFERENCE.md](STAGE2_REFERENCE.md)
+- **A contradiction in our own docs to resolve**: [STAGE2_REFERENCE.md](../STAGE2_REFERENCE.md)
   says the register block is `$1FF800–$1FF8FF` (256 bytes) while
   [SOURCES_REVIEW.md](SOURCES_REVIEW.md), quoting the HuC6280 manual, says
   `$1FF800–$1FFBFF` (1 KB, "reserved for extension"). The core decodes 256 bytes;
