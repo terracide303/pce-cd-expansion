@@ -63,10 +63,12 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 1. **The FPGA module is undecided, and it is decided by the BIOS, not the flash cart.**
    A 256 KB BIOS is fetched linearly, so it needs A0–A17: 18 + 8 data + 2 strobes =
-   **28 pins against 24 safe**. The 20K cannot boot a BIOS unaided. Options: a module
-   with more I/O, the same GW2AR-18 chip on our own board (the module exposes only 34
-   of an 88-pin package), or three address latches with a ~90 ns timing budget.
-   **This decides the carrier's footprint**, so it comes before any PCB.
+   **28 pins against 24 safe** — and 22–28 in practice, since the module's SD takes six
+   header I/O. The FPGA is a fixed dev-board module (no bare-chip option), so the way
+   out is to **keep the address bus off the FPGA**: the carrier's SRAM is addressed by
+   the console, and the FPGA owns only the windows it must interpret — 18–19 pins
+   ([CARRIER-ARCH.md](CARRIER-ARCH.md)). **This decides the carrier's footprint**, so
+   it comes before any PCB.
 2. **T1c, T1d, T3 and T5 have not been run**, and they need only a console, a meter,
    a scope and a real HuCard. They do not block the design; they block confidence.
 3. **Does a working console with a HuCard exist on the bench?** Everything above

@@ -219,6 +219,11 @@ problem — 2 MB of Arcade Card RAM plus 256 KB of CD RAM plus a BIOS fits in th
 
 ### What a BIOS costs in pins — the real reason the module decision cannot wait
 
+The FPGA is a **module**, not a bare chip — a Tang Nano 20K dev board in a socket on
+the carrier — so the 34 header I/O are the hard limit and there is no "bigger package"
+escape. The full arithmetic, and the architecture it forces, is
+[CARRIER-ARCH.md](CARRIER-ARCH.md).
+
 Stage 1a fits 25 pins only because its ROM is **8 KB**: 13 address lines. Now count
 what the device must do *first*, before any CD logic:
 
@@ -239,7 +244,7 @@ The three ways out, honestly priced:
 | option | what it costs |
 |---|---|
 | **a module with more I/O** (Tang Primer 20K, Mega 60K, …) | count the usable pins from its own pinout before committing; a different module means a different carrier footprint |
-| **the same chip on our own board** — the 20K's GW2AR-LV18 is an 88-pin package and the module only exposes 34 of its I/O | this is what the shipping product does (custom FPGA, 6 layers); it needs a fine-pitch BGA/QFN assembly and a second design, but it ends the pin argument for good |
+| **keep the 20K and move the address bus off the FPGA** — the carrier's SRAM is addressed by the console directly, and the FPGA owns only the windows it must interpret | the architecture [CARRIER-ARCH.md](CARRIER-ARCH.md) proposes; 18–19 pins instead of 29, at the price of the FPGA being out of the read path (and a ~35 ns timing budget instead of ~85 ns) |
 | **20K + address latches** (3× 74LVC574, latched on /RD falling) | the FPGA loses the address→/RD window and is left ~90 ns to fetch; needs its own timing proof, and it is the only option that keeps the 20K |
 
 **The SD card is free, though.** The Tang Nano 20K's microSD is wired **to the FPGA**

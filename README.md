@@ -54,6 +54,10 @@ exists yet. The design hand-off from the planning chat is
   bus contract (a cart drives whenever /RD is low and its window matches), the
   windows it answers, the `$18C1–$18C7` signature bytes, the mapper set including
   Street Fighter II's, and the firmware changelog read as a risk list.
+- **Carrier architecture (proposal):** [docs/CARRIER-ARCH.md](docs/CARRIER-ARCH.md) —
+  the FPGA is a Tang Nano 20K module in a socket, its 34 header I/O cannot carry the
+  card's address bus, so the SRAM on the carrier is addressed by the console and the
+  FPGA owns only its own windows.
 - **Stage 2 reference:** [docs/STAGE2_REFERENCE.md](docs/STAGE2_REFERENCE.md) — the
   MiSTer core's CD-ROM² memory map, registers, read side effects, IRQ2, K7, backup
   RAM, and the bus timing its CPU model implies.
