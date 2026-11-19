@@ -1,4 +1,13 @@
-# Stage 1: the RAM-responder board
+# Stage 1: the RAM-responder board (rear port)
+
+> **This is the rear-port variant, now stage 1b.** Stage 1 is built on the card
+> edge instead: [STAGE1-CARD.md](STAGE1-CARD.md), for the reasons in
+> [BUS_OPTIONS.md](BUS_OPTIONS.md). This page is kept because almost all of it
+> still holds — the pin budget method, the pin budget squeeze, the translators, the
+> decode, the simulation and its 55 ns result — and because the port is where
+> stereo CD-DA, K7 and a free card slot live, i.e. stage 2's host and the full
+> variant. Where the two diverge: the connector, the power source, the select
+> patterns, and stage 1's ability to boot and test itself.
 
 **Goal (from the hand-off):** prove the hard part of the whole project, a Tang
 Nano 20K answering the PC Engine's bus through the rear expansion port, before

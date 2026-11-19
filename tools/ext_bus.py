@@ -130,7 +130,7 @@ def main():
             print("  FAIL ", p)
         sys.exit(1)
     with OUT.open("w", newline="", encoding="utf-8") as f:
-        w = csv.writer(f)
+        w = csv.writer(f, lineterminator="\n")   # LF on every platform: the CSV stays byte-identical
         w.writerow(["pin", "row", "number", "signal", "schematic_name", "wiki_name", "note"])
         for row in "abc":
             for i, sch in enumerate(SCHEMATIC[row]):

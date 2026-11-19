@@ -1,21 +1,30 @@
-# Test plan: stage 1 (the RAM-responder board)
+# Test plan: stage 1 (the RAM responder)
 
-Every open question in [STAGE1.md](STAGE1.md) §5 gets a test here, in the order
-it's needed. Tests T1–T5 need **no board** and gate the order. T6–T10 need the
-board.
+Every open question in [STAGE1-CARD.md](STAGE1-CARD.md) §9 and
+[STAGE1.md](STAGE1.md) §5 gets a test here, in the order it's needed. The tests
+before T8 need **no working board** and gate the order: T1c, T1d, T3 and T5 only
+need the console, a meter, a scope and a real HuCard. T6–T10 need the board.
 
 **Equipment:** multimeter (continuity and DC volts), oscilloscope (2 channels
 minimum, 4 better, ≥100 MHz, 10× probes with short ground springs), a PC Engine
-with a HuCard game, the Tang Nano 20K.
+with a HuCard game, a real HuCard (to measure the card edge against), the Tang
+Nano 20K.
+
+**Two boards, one plan.** T1c, T2, T3, T4b, T5, T8 and T9 run on the **card-edge**
+board ([STAGE1-CARD.md](STAGE1-CARD.md)); T1, T1b, T6, T7 and T10 were written for
+the **rear-port** board ([STAGE1.md](STAGE1.md)), which is now stage 1b. T1b is a
+card test too once the carrier exists: print the footprint 1:1 and lay a real
+HuCard on it.
 
 **Record every result** in `docs/test_results/T<n>-<date>.md`: what was
 measured, scope screenshots, and pass or fail against the criterion below. A
 test with no record didn't happen.
 
 **Safety:** the console's power brick off and unplugged for every continuity
-test. The 0.1" port pins are close together: one slipped probe shorting
-+5A to a data line can hurt the console. Use a probe tip, not a clip, on the
-rear port.
+test. The 0.1" port pins are close together, and a card slot's contacts are
+spring-loaded and easy to bridge: one slipped probe shorting a supply to a data
+line can hurt the console. Use a probe tip, not a clip, and never push a probe
+into the card slot's throat — probe the fingers of a scrap card instead.
 
 ---
 
@@ -63,14 +72,62 @@ land on the console's **a1** (AudioL), which T1 identified.
 
 **Pass:** a1 on a1, and c23 on c23. **Fail:** mirror the footprint.
 
-### T2: +5A is healthy (multimeter + scope, console on, game running)
+### T1c: The card edge matches the (already verified) rear port (multimeter, console unplugged)
 
-**Answers:** can the bus-side translators run from +5A (STAGE1 decision 5)?
+**Answers:** is [`hucard_pinout.csv`](hucard_pinout.csv) right? It has **one**
+source — the wiki — while the rear-port pinout has two that agree. The rear port
+taps the same bus, is easy to probe, and is already verified: so it is the second
+source for the card edge, and this test is the one that makes the card pinout
+trustworthy.
+
+**How:** continuity between card-edge fingers and rear-port pins, on the same bus,
+console powered off and unplugged. `card` = pin number in `hucard_pinout.csv`,
+`port` = pin in `ext_bus_pinout.csv`. Nothing in the console needs opening: the
+card slot's fingers are reachable, and so is the rear port.
+
+| card | signal | beep to port | card | signal | beep to port |
+|---|---|---|---|---|---|
+| 14 | A0 | b12 | 26 | /RD | b7 |
+| 15 | D0 | c12 | 34 | /WR | b4 |
+| 24 | A20 | b19 | 35 | HSM | b3 |
+| 33 | A18 | a4 | 37 | /IRQ2 | b21 |
+| 3 | A19 | c19 | 18 | GND | c8 |
+| 13 | A1 | c13 | 38 | +5V | *(no port equivalent: check the CPU's +5 V)* |
+
+**Also check:** card 1 (/CD) does **not** beep to any of the above (it is a
+separate console input, pulled up); and each row does not beep to its neighbours.
+
+**Pass:** every row beeps where it should and nowhere else. **Fail:** stop, correct
+`hucard_pinout.csv`, re-run `tools/hucard_bus.py` — and if the wiki is wrong the
+tool's structural checks will not catch it, which is exactly why this test exists.
+
+### T1d: The card's physical dimensions (caliper, a real HuCard, console unplugged)
+
+**Answers:** the three numbers no committed source has: **board thickness**,
+**finger pitch and width**, and **insertion depth**. The carrier cannot be ordered
+without them, and a wrong thickness either will not enter the slot or will not make
+contact.
+
+**Also measure:** finger length, the bevel angle at the leading edge, the card's
+width and the position of the fingers along that edge (is the pattern centred?),
+and whether the fingers are gold-plated or tinned.
+
+**Pass:** the numbers are recorded in `docs/test_results/`, and the fab can hit
+them (thin board, ENIG, bevelled edge).
+
+### T2: The supply is healthy (multimeter + scope, console on, game running)
+
+**Answers:** can the bus-side translators run from the console's supply — `+5A` on
+the rear-port board (STAGE1 decision 5), **`+5 V` on card pin 38** on the card-edge
+board? On the card the question is also **how much current the slot will give**
+before the console sags: the Tang keeps its own USB-C supply, the card edge feeds
+only the translators.
 
 | measure | where | pass |
 |---|---|---|
-| DC voltage | a2 to c8 | 4.75–5.25 V |
-| ripple, AC-coupled, 20 MHz bandwidth limit | a2 | note the value; it's the baseline for T7 |
+| DC voltage | rear port: a2 to c8; card: 38 to 18 | 4.75–5.25 V |
+| ripple, AC-coupled, 20 MHz bandwidth limit | a2 / pin 38 | note the value; it's the baseline for T7 |
+| current drawn from the slot | card: a series meter, board running | note it; the Tang's own supply stays primary |
 
 ### T3: Bus timing, the real deadline (scope, console on, HuCard game running)
 
@@ -112,6 +169,27 @@ schematic). Trigger on A20 rising.
 **Pass:** whenever A20 is high, the HuCard's /CE stays high (the card isn't
 selected). **Fail:** the card decodes A20 high too; choose a different bank range.
 
+### T4b: A card may drive above the card window (scope, card fitted, self-test ROM running)
+
+**Answers:** the one assumption the card route rests on and no source documents:
+on a console with no CD unit, is `$100000` (A20 = 1) unclaimed, so that our card
+can put data there? Electrically it is the same decode the rear-port board needs —
+but the port is *meant* to answer there, and a card is not.
+
+**Probe:** CH1 /RD (card 26), CH2 A20 (card 24), CH3 D0 (card 15), CH4 /SEL_RAM
+(the decoder's output for `$100000`), during the self-test ROM's read-back.
+
+| measure | pass |
+|---|---|
+| D0 during a read of `$100000` | shows our data, no double driver (no mid-rail level, no hot chip) |
+| D0 during a read of `$1FE000` (VDC, also A20 = 1) | the **console's** data, and our driver off |
+| `/SEL_RAM` | low only for `$100000–$101FFF`, never during VDC or other I/O |
+| the same with a real HuCard game running | unaffected: the game still boots and plays |
+
+**Pass:** all four. **Fail:** if the console drives the bus there, the card route is
+dead above the window and the whole CD idea moves to the rear port — decide before
+ordering the carrier.
+
 ### T5: The BL616 leaves pins 71–73 alone (Tang Nano only)
 
 **Answers:** can A13–A15 use pins 71, 72, 73 (64 KB instead of 8 KB)?
@@ -137,21 +215,35 @@ respin moves A13–A15.
 
 ### T7: The board does no harm (board fitted, console ON, FPGA unconfigured)
 
+On the **card-edge** board "unconfigured" means the FPGA's I/Os are high-Z: the
+console will see a card that answers nothing and hang at the reset vector — that is
+expected and harmless, and it is what this test checks. Do **not** ground `/CD` on
+a prototype where the FPGA is unloaded if you want the console usable without it;
+fit a jumper.
+
 | check | pass |
 |---|---|
-| the console boots a HuCard game normally | yes |
-| the picture: no new noise, bars or shimmer compared with no board | yes |
-| +5A ripple vs T2 | not noticeably worse |
-| the data translator never drives the bus (CH1 its /OE, run 5 min) | /OE stays high unless A20–A16 = `1 0000` |
+| the console boots a HuCard game normally **through** our card (flash-cart role, later) | yes |
+| the console with the FPGA unloaded: hangs cleanly at the vector, no hot parts, no bus fight | yes |
+| the picture: no new noise, bars or shimmer compared with no card | yes |
+| supply ripple vs T2 | not noticeably worse |
+| the data translator never drives the bus (CH1 its /OE, run 5 min) | /OE stays high unless a select is active |
 
-### T8: The RAM answers (8 KB at bank $80)
+### T8: The RAM answers (8 KB at bank $80) — card-edge board
 
-**How:** flash the 8 KB responder image. Boot a test program that writes
-patterns to bank `$80`, `$2000–$3FFF` and reads them back (walking ones, address
-in data, random), and shows pass or fail on screen. The program loads from a
-flash HuCard; writing it is its own task.
+**How:** flash the card bitstream and plug the board in. The FPGA's ROM window
+holds the test program (8 KB at `$000000`, its reset vector at `$1FFE`), so the
+console boots **our** program and no test card or programmer is needed. The
+program shows a banner, maps bank `$80`, writes the patterns (walking ones, walking
+zeros, address in data, pseudo-random) to `$100000–$101FFF`, reads them back, and
+prints pass or fail per pattern, halting on the first mismatch with the address and
+both values.
 
-**Pass:** all patterns read back, 10 minutes of repeats, no errors.
+**On the rear-port board instead:** the same program has to come from a flash
+HuCard, which is its own task.
+
+**Pass:** all patterns read back, 10 minutes of repeats, no errors, and the screen
+output survives a reset and a power cycle.
 
 ### T9: The timing margin, measured
 
