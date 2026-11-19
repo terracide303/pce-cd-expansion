@@ -79,13 +79,14 @@ Consequences for the carrier:
 ### Decision (2026-11-19): the card may be longer than a HuCard
 
 The owner's call: **the card does not have to be HuCard-sized.** Only the part that
-goes into the slot has to match a real card; the rest may stick out of the console.
+goes into the slot has to match a real card; the rest may stick out of the console,
+**by up to 9 mm**: the outline is at most **54.1 × 94.4 mm** (85.4 + 9).
 
 | part of the card | constraint |
 |---|---|
 | the slot end: fingers, bevel, thickness, the first **8.6 mm** | **exact**, per the table above |
 | the width inside the slot opening | **54.1 mm**, the card's own width, or it won't go in |
-| length | **free.** It sticks out of the front of the console |
+| length | **at most 94.4 mm**: a HuCard's 85.4 mm plus 9 mm sticking out of the console |
 | width outside the console | free in principle; keep 54.1 mm until T1d shows the slot surround |
 
 What to check on the real console before drawing the outline (add to T1d): what the
@@ -93,10 +94,15 @@ What to check on the real console before drawing the outline (add to T1d): what 
 while it is on), and where the console's front lip is, so the wider part (if any)
 starts after both.
 
-What it changes: **board size no longer limits the FPGA module.** A module bigger
-than the Tang Nano 20K fits on a longer card, so the module decision
-([RESEARCH-STATUS.md](RESEARCH-STATUS.md) §3) is about pins and price only. The
-section below, written for a card-sized board, still holds for a 20K.
+What it changes, with numbers: the rotated Tang Nano 20K layout below used 72.6 of
+85.4 mm; at 94.4 mm there are **21.8 mm** spare along the card and 31 mm beside the
+Tang. Room for an SRAM, an SD socket and an audio DAC, but **not for a much bigger
+plug-in module**: any module must fit the 54.1 mm width with 8.6 mm + ~10 mm of
+fingers and translators in front of it, i.e. at most **~54 × 75 mm**. A larger
+FPGA therefore means either a module that small or the FPGA soldered directly on the
+card, as the EverDrive does. The module decision
+([RESEARCH-STATUS.md](RESEARCH-STATUS.md) §3) is about pins, price **and that
+footprint**.
 
 ### Does the Tang even fit on a card?
 

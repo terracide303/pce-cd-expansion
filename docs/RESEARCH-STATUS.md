@@ -62,9 +62,9 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 ## 3. Missing: what blocks ordering the carrier
 
 1. **The FPGA module is undecided, and it is decided by the BIOS, not the flash cart.**
-   Size is no longer a factor: the card may be longer than a HuCard and stick out of
-   the console (owner's decision 2026-11-19, [STAGE1-CARD.md](STAGE1-CARD.md) §1),
-   so a module with more pins fits.
+   Size budget (owner's decision 2026-11-19, [STAGE1-CARD.md](STAGE1-CARD.md) §1):
+   the card may stick out of the console by 9 mm, outline at most 54.1 × 94.4 mm,
+   so a module must fit **~54 × 75 mm** — or the FPGA goes directly on the card.
    A 256 KB BIOS is fetched linearly, so it needs A0–A17: 18 + 8 data + 2 strobes =
    **28 pins against 24 safe** — and 22–28 in practice, since the module's SD takes six
    header I/O. The FPGA is a fixed dev-board module (no bare-chip option), so the way
