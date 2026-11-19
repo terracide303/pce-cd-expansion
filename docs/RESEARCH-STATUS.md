@@ -61,7 +61,14 @@ map and a register list, and almost nothing below them; stage 3 is a paragraph.*
 
 ## 3. Missing: what blocks ordering the carrier
 
-1. **Decided 2026-11-19 (owner): the Tang Nano 20K stays.** Bigger modules cost too
+1. **Superseded the same day (owner): the core moves to a Lattice ECP5, LFE5U-45F in
+   CABGA256, soldered directly on the card.** Inspiration board:
+   [cheyao/icepi-zero](https://github.com/cheyao/icepi-zero) (ECP5 25F, same package,
+   Solderpad Hardware v2.1 = Apache-2.0 compatible, KiCad sources). Details and
+   consequences: [FPGA-ECP5.md](FPGA-ECP5.md). The Tang decision below is kept for
+   the record and still covers board A as a bench test.
+
+   **Earlier 2026-11-19 (owner): the Tang Nano 20K stays.** Bigger modules cost too
    much, and the owner's core (PCEHeroTN) targets only its GW2AR-18. The pin shortage
    below is therefore solved on the carrier (board B's SRAM, latches or a CPLD), not by
    a bigger FPGA. Later option, same chip, so the core still fits: a GW2AR-18 soldered

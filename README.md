@@ -58,6 +58,9 @@ exists yet. The design hand-off from the planning chat is
   the FPGA is a Tang Nano 20K module in a socket, its 34 header I/O cannot carry the
   card's address bus, so the SRAM on the carrier is addressed by the console and the
   FPGA owns only its own windows.
+- **FPGA (decided 2026-11-19):** a Lattice **ECP5 LFE5U-45F** (CABGA256) soldered on
+  the card, after the [Icepi Zero](https://github.com/cheyao/icepi-zero) board; the
+  owner ports the core to it — [docs/FPGA-ECP5.md](docs/FPGA-ECP5.md).
 - **Stage 2 reference:** [docs/STAGE2_REFERENCE.md](docs/STAGE2_REFERENCE.md) — the
   MiSTer core's CD-ROM² memory map, registers, read side effects, IRQ2, K7, backup
   RAM, and the bus timing its CPU model implies.
