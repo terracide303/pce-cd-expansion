@@ -67,9 +67,14 @@ Consequences for the carrier:
 - **8.6 mm of insertion depth** is used by the fingers and the slot: the
   translators and the Tang must sit behind that line, which sets where the board's
   parts can go relative to the card edge.
-- **Buy a JT Studios 38-pin slot** for bench work: it lets the carrier be probed,
-  powered and programmed outside a console, which is what T4b and T9 need. It turns
-  a mistake into a socket, not a console.
+- **No slot is needed.** The card is programmed over the Tang's own USB-C and
+  needs only +5 V and ground on two bench leads; the fingers and the board's test
+  points are probe-able with it lying on the bench. A bought slot (JT Studios,
+  38-pin) would be a *fixture*, not a programmer: useful only if four channels must
+  be clipped on something that stays still, or if T4b has to be chased with no
+  console in the loop — and even then it needs a jig PCB built around it first.
+  The repro-HuCard world needs a slot because it flashes a TSOP; this board never
+  writes to the bus side.
 
 ### Does the Tang even fit on a card?
 

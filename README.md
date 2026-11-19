@@ -77,9 +77,10 @@ exists yet. The design hand-off from the planning chat is
   it: 1.6 mm board, 1.27 mm finger pitch, 54.1 × 85.4 mm outline, and a 0.75 mm
   riser because a bare board does not grip. No layout, schematic or gerber is
   reused. See [docs/STAGE1-CARD.md](docs/STAGE1-CARD.md) §1.
-- **38-pin slot:** [JT Studios PC Engine connector](https://jt-studios.com/product/38pin-pc-engine-connector/),
-  the only one on sale; worth buying to probe and program the carrier outside a
-  console.
+- **38-pin slot (optional, not needed to build):** [JT Studios PC Engine connector](https://jt-studios.com/product/38pin-pc-engine-connector/)
+  is the only one on sale. Repro-HuCard makers need one to flash a TSOP in a
+  programmer; this board is programmed over USB-C, so a slot is only a bench
+  fixture, and one that needs a jig around it.
 - **Region handling:** the same repo's HuConv (`HuCONV_v1.5/huconv.py`) shows a
   PC Engine / TurboGrafx-16 difference is a **per-byte bit reversal**, so serving
   both is a mapping in the FPGA, not a hardware change.
