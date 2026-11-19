@@ -4,6 +4,23 @@ Decided 2026-11-19 with the owner. This is the board the project ships: one
 HuCard-sized card that is the flash cart and, later, the whole CD-ROM² system,
 EverDrive style. It replaces boards A and B ([CARRIER-ARCH.md](CARRIER-ARCH.md)).
 
+## Status (2026-11-19)
+
+| step | state |
+|---|---|
+| schematic | **generated** (`hw/card/`, 9 sheets) from `hw/card/design.py` by `tools/gen_card.py` |
+| checks | **all pass** (`python tools/check_card.py --selftest`): KiCad netlist = design; the FPGA core is wired exactly as the working Icepi Zero v1.4 apart from the documented changes; edge, 5 V isolation, safe defaults, power OR-ing, 3.3 V banks; every pin has a pad; ERC. The self-test plants 9 faults and catches all 9 |
+| PCB | **staged** (`tools/make_card_pcb.py`, KiCad's Python): HuCard outline, 4-layer Icepi stack-up, fingers placed and locked, slot keep-out, rules. Schematic parity **0 differences**. Placement and routing: human, brief in [CARD_PLACEMENT.md](CARD_PLACEMENT.md) |
+| BOM | Icepi parts carry their LCSC numbers; **new parts are left empty on purpose**: fill from the fab's library when ordering |
+
+Regenerate after editing `design.py`:
+
+```
+python tools/gen_card.py
+python tools/check_card.py --selftest
+"C:/Users/terra/AppData/Local/Programs/KiCad/10.0/bin/python.exe" tools/make_card_pcb.py   # only before placement starts
+```
+
 ## Choices (owner, 2026-11-19)
 
 | question | answer |

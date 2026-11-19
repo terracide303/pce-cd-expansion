@@ -344,7 +344,7 @@ res("R131", "470", "DAC_OUTL", "AUD_L", "audio")
 res("R132", "470", "DAC_OUTR", "AUD_R", "audio")
 cap("C147", "2.2n", "AUD_L", "audio")
 cap("C148", "2.2n", "AUD_R", "audio")
-part("J103", "Connector_Audio:AudioJack3", "3.5 mm stereo", "Connector_Audio:Jack_3.5mm_CUI_SJ1-3523N_Horizontal",
+part("J103", "Connector_Audio:AudioJack3", "3.5 mm stereo", "Connector_Audio:Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal",
      "audio", {"T": "AUD_L", "R": "AUD_R", "S": "GND"})
 res("R134", "10k", "AUD_L", "AUD_MIX", "audio")
 res("R135", "10k", "AUD_R", "AUD_MIX", "audio")

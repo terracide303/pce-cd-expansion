@@ -1360,7 +1360,7 @@
 		(uuid "bb34b24f-e1ab-5e6e-9cd6-91064bcb4b69")
 		(property "Reference" "J103" (at 157.48 148.59 0) (effects (font (size 1.27 1.27)) ))
 		(property "Value" "3.5 mm stereo" (at 157.48 151.13 0) (effects (font (size 1.27 1.27)) ))
-		(property "Footprint" "Connector_Audio:Jack_3.5mm_CUI_SJ1-3523N_Horizontal" (at 157.48 157.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
+		(property "Footprint" "Connector_Audio:Jack_3.5mm_CUI_SJ-3523-SMT_Horizontal" (at 157.48 157.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "Datasheet" "" (at 157.48 157.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(property "LCSC" "" (at 157.48 157.48 0) (effects (font (size 1.27 1.27)) (hide yes)))
 		(pin "R" (uuid "913e81ba-537e-51b0-abf0-86acd80afe23"))

@@ -1,0 +1,30 @@
+{
+  "_comment": "Read by PCB HERO's scripts/check_board.py. Numbers from the Icepi Zero v1.4 on the same 4-layer stack-up.",
+  "fab": {
+    "name": "JLCPCB 4-layer JLC04121H-7628",
+    "track": 0.09,
+    "clearance": 0.09,
+    "via_hole": 0.15,
+    "via_dia": 0.25,
+    "hole_to_hole": 0.25,
+    "edge": 0.25
+  },
+  "bga": [
+    {
+      "ref": "U1",
+      "pitch": 0.8,
+      "via": [
+        0.45,
+        0.2
+      ]
+    }
+  ],
+  "diff_classes": [],
+  "min_custom_rules": 6,
+  "ignore_pairlike": [
+    "RP_DP",
+    "RP_DM",
+    "USB_D2+",
+    "USB_D2-"
+  ]
+}
