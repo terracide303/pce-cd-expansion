@@ -182,10 +182,11 @@ selected). **Fail:** the card decodes A20 high too; choose a different bank rang
 
 ### T4b: A card may drive above the card window (scope, card fitted, self-test ROM running)
 
-**Answers:** the one assumption the card route rests on and no source documents:
-on a console with no CD unit, is `$100000` (A20 = 1) unclaimed, so that our card
-can put data there? Electrically it is the same decode the rear-port board needs —
-but the port is *meant* to answer there, and a card is not.
+**Answers:** whether **our** board can answer `$100000` (A20 = 1) on a console with
+no CD unit. The practice is already settled — the Turbo EverDrive Pro's built-in
+CD-ROM² core does exactly this from the card slot
+([BUS_OPTIONS.md](BUS_OPTIONS.md) §10) — so this is not a go/no-go any more. What it
+checks is our decode, our drive strength and our timing, on our board.
 
 **Probe:** CH1 /RD (card 26), CH2 A20 (card 24), CH3 D0 (card 15), CH4 /SEL_RAM
 (the decoder's output for `$100000`), during the self-test ROM's read-back.
@@ -197,9 +198,9 @@ but the port is *meant* to answer there, and a card is not.
 | `/SEL_RAM` | low only for `$100000–$101FFF`, never during VDC or other I/O |
 | the same with a real HuCard game running | unaffected: the game still boots and plays |
 
-**Pass:** all four. **Fail:** if the console drives the bus there, the card route is
-dead above the window and the whole CD idea moves to the rear port — decide before
-ordering the carrier.
+**Pass:** all four. **Fail:** if the console or another part drives the bus there,
+the window needs the rear port instead — but the shipping product says the window
+is ours to take, so a failure here is our bug, not the architecture's.
 
 ### T5: The BL616 leaves pins 71–73 alone (Tang Nano only)
 

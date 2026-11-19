@@ -8,7 +8,8 @@ do. Both pinouts are committed as data (`docs/ext_bus_pinout.csv`,
 `tools/hucard_bus.py`.
 
 **Decision: stage 1 is built on the card edge**, and the same board grows into a
-HuCard flash card. The rear-port board stays in the repo as the full variant.
+HuCard flash card. The rear-port board stays in the repo as the full variant. This
+architecture is not speculative: it ships (§10).
 
 ## 1. What each connector carries
 
@@ -114,6 +115,38 @@ see. Stage 2 gets worse (34–36 pins against 28 safe,
 ## 9. What would reverse this
 
 If stereo CD-DA through the console's own AV output turns out to be required, or a
-survey shows games polling K7, the card cannot supply it: then the port board is
-the product (stage 1b becomes stage 1) and the card becomes the System Card — which
-is exactly how a real PC Engine CD is put together.
+survey shows games polling K7, the card alone cannot supply it: then the port board
+is added — which is what the one shipping product does (§10) — and the card stays
+the card. This is not either/or.
+
+## 10. It already ships: the Turbo EverDrive Pro
+
+The [Turbo EverDrive Pro](https://krikzz.com/our-products/cartridges/turbo-everdrive-pro.html)
+($199, krikzz) is this project's architecture as a commercial product: **one
+cartridge in the HuCard slot** that plays HuCard ROMs from SD *and* runs a
+**built-in CD-ROM² core**, with Arcade Card functions, save states, Ten no Koe 2
+saves and region auto-detection. Its own footnote is the load-bearing fact: the CD
+core **stops working if a CD-ROM or Ten no Koe 2 is connected to the expansion
+port**, or if the console has a built-in CD-ROM (so it cannot do CD games on a Duo).
+The whole CD system is therefore in the cartridge.
+
+What that settles for us:
+
+| question | answer |
+|---|---|
+| may a card answer `$1FF800` and drive `$100000`? (T4b) | **yes, commercially proven.** Why we still run T4b: our decode, our board, our timing — but it is now expected to pass, not a risk |
+| is the card the right host for the CD logic? | yes, which is the decision this document records |
+| does a card need a System Card? | no — the device is the System Card, and its BIOS is a file |
+| stereo CD-DA from a card alone? | **no** — they say so themselves: "CD and hucard audio doesn't work via RF output" because of the mixing circuit, and they sell the **EDFX**, a **stereo expansion board**, alongside it |
+| how are regions handled? | they do "switchless region auto detection" — consistent with §5's bit reversal, done in logic |
+| what does it need that we lack? | a **Cyclone IV** and **16 MB PSRAM** on a 6-layer board — i.e. the "bigger module" of [STAGE1-CARD.md](STAGE1-CARD.md) §7, not a different idea |
+
+Two lessons we should keep:
+
+1. **The audio answer is a companion port board, not "make the card do it".** My
+   §5 lists mono audio as a cost and HDMI/I2S as the escape; the shipping answer is
+   an expansion-port stereo board. That is stage 2's real option list.
+2. **Memory is not our limit, pins are.** 2 MB of Arcade Card RAM + 256 KB of CD RAM
+   + the BIOS sits comfortably inside the 20K's 8 MB SDRAM. A 20-line address bus
+   does not fit in 24 pins. Those are different problems, and only the second one
+   is a module decision.

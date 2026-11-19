@@ -204,7 +204,12 @@ The same board should present HuCard ROMs from microSD. That needs:
 - the ROM itself in the Tang's SDRAM or PSRAM, with the mapper's bank switches
   driving the read address.
 
-That is **~30–33 pins against 24 safe**, so:
+That is **~30–33 pins against 24 safe**, so — and note the one shipping product
+that does this job ([Turbo EverDrive Pro](https://krikzz.com/our-products/cartridges/turbo-everdrive-pro.html),
+[BUS_OPTIONS.md](BUS_OPTIONS.md) §10) uses a **Cyclone IV with 16 MB PSRAM on a
+6-layer board**: the pin count is the reason, not the idea. Memory is not the
+problem — 2 MB of Arcade Card RAM plus 256 KB of CD RAM plus a BIOS fits in the
+20K's 8 MB SDRAM:
 
 | option | cost |
 |---|---|

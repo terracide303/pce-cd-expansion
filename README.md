@@ -41,6 +41,13 @@ exists yet. The design hand-off from the planning chat is
   changes, ~85 ns inside the ~140 ns the MiSTer core's CPU model takes to latch.
 - **One bitstream exists:** [compiled/](compiled/BUILD_NOTES.md) — 8 KB responder,
   19 LUTs, Fmax 271 MHz, never run on hardware.
+- **Prior art, and it is the same architecture:** the
+  [Turbo EverDrive Pro](https://krikzz.com/our-products/cartridges/turbo-everdrive-pro.html)
+  is one cartridge in the HuCard slot that plays HuCards *and* runs a built-in
+  CD-ROM² core (Cyclone IV, 16 MB PSRAM), with the CD core deliberately dead if a
+  real CD unit is attached — the whole CD system is in the card. It also shows the
+  audio answer: a separate stereo expansion board (EDFX), not the card
+  ([docs/BUS_OPTIONS.md](docs/BUS_OPTIONS.md) §10).
 - **Stage 2 reference:** [docs/STAGE2_REFERENCE.md](docs/STAGE2_REFERENCE.md) — the
   MiSTer core's CD-ROM² memory map, registers, read side effects, IRQ2, K7, backup
   RAM, and the bus timing its CPU model implies.
