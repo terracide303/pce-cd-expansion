@@ -126,7 +126,33 @@ supplies, translator directions, the decoder, 5 V never wired to the FPGA, FPGA 
 and KiCad's ERC. Its self-test breaks the netlist nine ways and must catch each. On its first run it
 caught a real generator bug: resistors placed 7.62 mm apart touched pins and merged eight data nets.
 
-## 7. What happens next
+## 7. The FPGA image, in simulation
+
+[`rtl/ram_responder.v`](../rtl/ram_responder.v): every console input goes through one
+two-stage synchroniser on a 108 MHz clock; RAM is read continuously so data waits
+before /RD falls; the data pins are driven only while /RD and /SEL are low
+(combinational); a write commits on /WR's rising edge. `ADDR_BITS` = 13 (8 KB, bank
+`$80`) for the first image, 16 (64 KB) after test T5.
+
+`sh sim/run_ram_responder.sh` runs it on a model of the board (decoder, translators,
+their datasheet delays) and a 7.16 MHz bus that's asynchronous to the FPGA clock.
+
+| run | result |
+|---|---|
+| 8 KB and 64 KB, nominal bus (address setup 20 ns, 60 ns strobe) | **PASS**: 0 data errors over ~10–17k checked reads, no FPGA/translator fight longer than 7 ns, 20 ns read margin |
+| three broken copies (drives during writes; never commits a write; writes on any address) | **all FAIL**, as they must |
+| **sweep:** how soon after the address changes can the console sample read data? | **fails at ≤ 50 ns, clean at 55 ns** |
+
+**What that means for T3:** our data settles on the bus ~50 ns after the address
+changes. Most of that is the 74HCT688 decode (35 ns, datasheet worst case) and the
+translator (8 ns). The console's cycle is 140 ns; if T3 shows it samples read data
+later than ~55 ns into the cycle (expected: near its end), we have margin. If not,
+the fix is known: a faster decoder (74AHCT family), or decode in the FPGA.
+
+Not covered by the simulation: the real HuC6280 pin timing (T3), metastability,
+the Gowin PLL, analog effects.
+
+## 8. What happens next
 
 1. **Schematic review** (you, in KiCad): open `hw/stage1/pce_exp_stage1.kicad_pro`.
    The Tang is one part (A1) with one footprint, so its two header rows are fixed
