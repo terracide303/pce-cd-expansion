@@ -122,7 +122,42 @@ So §2 is the shape. It also happens to be how the shipping product is built: a
 companion memory and a small FPGA that owns only what it must — with the difference
 that they could afford a bigger FPGA and used it.
 
-## 8. Open
+## 8. Which board to order first — undecided, on purpose
+
+Two first boards are possible and they are **not** the same PCB. Recorded so the
+choice can be made with the numbers in front of us:
+
+| | **board A: stage 1 on the card edge** | **board B: the SRAM carrier (§2)** |
+|---|---|---|
+| the FPGA | in the read path | out of it |
+| pins | 25 (24 safe + 1 BL616) | 18–19 of 24 |
+| what it proves | the FPGA can drive the bus at all; T4b and T8 | the product architecture |
+| risk | low, small board | the ~35 ns margin and the 514 KB/512 KB window problem |
+| order it | now | after T3 has measured the real deadline |
+
+**Board A is the recommended first order** and nothing has been ordered.
+
+### The Tang footprint, verified
+
+`hw/stage1/pce_exp.pretty/TangNano20K_Sockets.kicad_mod` already exists and measures
+**2 rows × 20 pads, 2.54 mm pitch, rows 20.32 mm apart** (1.7 mm through-hole pads).
+Any carrier reuses that footprint rather than re-measuring the module.
+
+### Fab checklist for board A
+
+- **1.6 mm** — the proven repro thickness. A 1.6 mm card works; it is only loose in
+  the slot, which the repro fixes with a 0.75 mm riser. Do not bet the order on 2.0 mm.
+- **ENIG, 45° bevel**, bevel on the face the slot's guide sees. Hard gold is optional.
+- **No vias, no parts inside the 8.6 mm finger zone** — that is where the slot wipes.
+- **Fingers**: 38, 1.27 mm pitch, 0.75 mm wide, 46.99 mm span, mask-open copper on
+  `F.Cu` + `F.Mask`.
+- **Order 5.** The edge fit is the one thing the drawings cannot settle.
+- Parts: 2 × `74HCT688`, 1 × `SN74LVC8T245`, 2 × `SN74LVC245APW`, 33 Ω × 8,
+  100 nF × 8, 10 µF × 2, 6 test points, 2 × 20-pin female headers (hand-soldered).
+  All six SMD parts are SOIC/TSSOP: hand-soldering a bare board may well be faster
+  than waiting for a fab to source the comparator.
+
+## 9. Open
 
 - 1 MB 5 V SRAM choice (AS6C8008?) — availability and price, and whether 5 V parts
   are still sane to design in for a 2026 build.
