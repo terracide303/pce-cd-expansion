@@ -1,0 +1,50 @@
+Source: https://pce.nesdev.org/wiki/HuCard_pinout (raw wiki text, fetched 2026-11-19)
+
+==Pinout==
+ Card |  | PC Engine
+ -----+--+--------------------------
+    1 |->| /CD
+    2 |->| AUDIO IN
+    3 |<-| CPU PA19
+    4 |<-| CPU PA16
+    5 |<-| CPU PA15
+    6 |<-| CPU PA12
+    7 |<-| CPU PA7
+    8 |<-| CPU PA6
+    9 |<-| CPU PA5
+   10 |<-| CPU PA4
+   11 |<-| CPU PA3
+   12 |<-| CPU PA2
+   13 |<-| CPU PA1
+   14 |<-| CPU PA0
+   15 |<>| CPU D0 (PCE) or D7 (TG16)
+   16 |<>| CPU D1 (PCE) or D6 (TG16)
+   17 |<>| CPU D2 (PCE) or D5 (TG16)
+   18 |--| GND
+   19 |<>| CPU D3 (PCE) or D4 (TG16)
+   20 |<>| CPU D4 (PCE) or D3 (TG16)
+   21 |<>| CPU D5 (PCE) or D2 (TG16)
+   22 |<>| CPU D6 (PCE) or D1 (TG16)    
+   23 |<>| CPU D7 (PCE) or D0 (TG16)    Orientation:
+   24 |<-| CPU PA20                     --------------------------
+   25 |<-| CPU PA10                     .-------------------.
+   26 |<-| CPU /RD                      | .---------..------|
+   27 |<-| CPU PA11                     | |         ||      |- 1
+   28 |<-| CPU PA9                      |>|  Label  ||      |
+   29 |<-| CPU PA8                      | |         ||      |- 38
+   30 |<-| CPU PA13                     | '---------<nowiki>''</nowiki>------|
+   31 |<-| CPU PA14                     '-------------------'
+   32 |<-| CPU PA17
+   33 |<-| CPU PA18                     Legend: 
+   34 |<-| CPU /WR                      --------------------------
+   35 |<-| HSM                          [HuCard]-- Power, n/a  
+   36 |<-| /RST                         [HuCard]<- HuCard input 
+   37 |->| /IRQ2                        [HuCard]-> HuCard output 
+   38 |--| +5V                          [HuCard]<> Bidirectional
+
+==Signal descriptions==
+* '''/CD''': Card detect. Connects to the expansion port. Grounded by the HuCard so the CD-ROM<sup>2</sup> can tell a card is inserted.
+* '''AUDIO IN''': Mono audio. Mixed into both channels.
+* '''CPU PA20..0''': CPU physical address (the 21-bit post-MMU address). PA20 is used as /CE.
+* '''CPU D7..0''': The order of these pins depends on region. For PC Engine, they are ascending, and for TurboGrafx-16, they are descending.
+* '''HSM''': High speed mode, asserted by the CPU when operating at 7.16 MHz.
