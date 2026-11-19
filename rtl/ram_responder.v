@@ -52,8 +52,12 @@ module ram_responder #(
 
     // ---------------------------------------------------------------- memory
     reg [7:0] mem [0:(1 << ADDR_BITS) - 1];
+    // Simulation only: Gowin block RAM already powers up as zero, and its
+    // synthesiser caps loops at 2000 iterations.
+    // synthesis translate_off
     integer i;
     initial for (i = 0; i < (1 << ADDR_BITS); i = i + 1) mem[i] = 8'h00;
+    // synthesis translate_on
 
     // In 8 KB mode only bank $80 answers: A13-A15 must be 0.
     wire in_window = (ADDR_BITS == 16) ? 1'b1 : (a_s[15:13] == 3'b000);
