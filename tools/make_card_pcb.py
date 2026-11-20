@@ -231,7 +231,7 @@ def write_rules():
     # and filling and capping it is an extra-cost option at both fabs. The router
     # (KiCadRoutingTools) reads this from the project for every step.
     pro.setdefault("kicad_routing_tools", {})["same_net_pad_clearance"] = FAB["via_pad_clearance"]
-    power = ["+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP", "+3V3", "+2V5", "+1V1", "+1V1_RP", "PWR_FILTERED_2V5", "GND"]
+    power = ["+5V_SLOT", "+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP", "+3V3", "+2V5", "+1V1", "+1V1_RP", "PWR_FILTERED_2V5", "GND"]
     pro["net_settings"] = {
         "classes": [
             {"name": "Default", "clearance": DESIGN["clearance"], "track_width": DESIGN["default_track"],

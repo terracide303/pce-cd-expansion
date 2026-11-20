@@ -201,7 +201,7 @@ def edge_net(signal):
     if signal == "GND":
         return "GND"
     if signal == "+5V":
-        return "+5V_CON"
+        return "+5V_SLOT"                  # through F101 to +5V_CON
     if signal == "/CD":
         return "GND"                       # the card is present: a HuCard grounds /CD
     if signal == "AUDIO_IN":
@@ -270,6 +270,11 @@ for ref, net in [("TP101", "BUS_RD_N"), ("TP102", "BUS_WR_N"), ("TP103", "BUS_D0
 for ref, src in [("D101", "+5V_CON"), ("D102", "VBUS_FT"), ("D103", "VBUS_RP")]:
     part(ref, "Device:D_Schottky", "B5819W", "Diode_SMD:D_SOD-123", "power", {"1": "+5V_CARD", "2": src})                                                 # pin 1 = K, pin 2 = A
 cap("C108", "10u", "+5V_CON", "power", fp=C0603)
+# Polyfuse between the slot's 5 V finger and everything on the card (owner decision, 2026-11-20,
+# docs/REVIEW-2026-11-20.md): a short on the card cannot load the console's supply. Hold 750 mA,
+# trip 1.5 A, >= 6 V: the card is estimated at 150-300 mA, and a warm polyfuse holds ~70 %.
+part("F101", "Device:Polyfuse", "750mA hold, 1.5A trip, 6V+", "Fuse:Fuse_1206_3216Metric", "power",
+     {"1": "+5V_SLOT", "2": "+5V_CON"})
 
 # --- RP2040 companion (FPGA-Companion; Raspberry Pi "minimal design"). Link pins are the
 # firmware's defaults for a plain RP2040 build (fpga-companion src/rp2040/mcu_hw.c:

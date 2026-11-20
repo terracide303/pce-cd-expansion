@@ -55,8 +55,8 @@ def edge(b):
         problems.append("fingers not on F.Cu")
     if min(x, key=x.get) != "38" or max(x, key=x.get) != "1":
         problems.append(f"leftmost finger is {min(x, key=x.get)}, rightmost {max(x, key=x.get)} (want 38 and 1)")
-    if pads["38"].GetNetname() != "+5V_CON" or pads["18"].GetNetname() != "GND":
-        problems.append("pin 38 is not +5V_CON or pin 18 is not GND")
+    if pads["38"].GetNetname() != "+5V_SLOT" or pads["18"].GetNetname() != "GND":
+        problems.append("pin 38 is not +5V_SLOT (the fuse side) or pin 18 is not GND")
     if nearest != "18":
         problems.append(f"finger nearest the edge is {nearest}, want 18 (ground mates first)")
     return problems

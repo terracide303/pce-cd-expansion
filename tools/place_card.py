@@ -161,6 +161,9 @@ def main():
     put("U103", 5.6, 71.5, 90)        # A16-A20, /RD, /WR, /RST
     put("U104", 50.1, 69.5, 0)        # HSM
     put("U106", 50.1, 74.5, 0)        # /IRQ2
+    fps["F101"].SetPosition(mm(4.0, 67.0))       # polyfuse on the back, on the 5 V run from finger 38
+    fps["F101"].Flip(fps["F101"].GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
+    occupied["B"].append(courtyard(fps["F101"]))
     # Translators: turn each one so its CONSOLE-side pins (BUS_* / T_D*) face the fingers
     # (larger y) and its FPGA-side pins face the FPGA. Checked on the placed pads, not assumed.
     for ref in ("U101", "U102", "U103", "U104", "U105", "U106"):
@@ -190,7 +193,7 @@ def main():
             "C101": "U101", "C102": "U102", "C103": "U103", "C104": "U104", "C105": "U105", "C106": "U105",
             "R101": "U105", "R102": "U105", "C107": "U106", "R103": "U106", "C108": "D101",
             **{f"R{110 + i}": "U105" for i in range(8)}}
-    POWER = {"GND", "+3V3", "+1V1_RP", "+5V_CON", "+5V_CARD"}
+    POWER = {"GND", "+3V3", "+1V1_RP", "+5V_SLOT", "+5V_CON", "+5V_CARD"}
     claimed = set()
 
     def pin_anchor(ref):

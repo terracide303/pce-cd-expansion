@@ -105,7 +105,7 @@ def check_icepi(nets):
 
 # ---------------------------------------------------------------- 3. rules
 HUCARD = list(csv.DictReader(open(ROOT / "docs" / "hucard_pinout.csv", encoding="utf-8")))
-CONSOLE_POWER = {"+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP"}
+CONSOLE_POWER = {"+5V_SLOT", "+5V_CON", "+5V_CARD", "VBUS_FT", "VBUS_RP"}
 
 
 def check_rules(comps, nets):
@@ -118,7 +118,7 @@ def check_rules(comps, nets):
     # the edge, derived here from the CSV (not from design.py)
     for row in HUCARD:
         s = row["signal"]
-        want = {"GND": "GND", "+5V": "+5V_CON", "/CD": "GND", "AUDIO_IN": "BUS_AUDIO"}.get(
+        want = {"GND": "GND", "+5V": "+5V_SLOT", "/CD": "GND", "AUDIO_IN": "BUS_AUDIO"}.get(
             s, "BUS_" + s.replace("/", "") + ("_N" if s.startswith("/") else ""))
         if card.get(("J101", row["pin"])) != want:
             problems.append(f"J101.{row['pin']} ({s}) is {card.get(('J101', row['pin']))}, expected {want}")
@@ -172,9 +172,14 @@ def check_rules(comps, nets):
         diodes = [r for r, p in bynet[src] if r.startswith("D") and p == "2"]
         if len(diodes) != 1 or card.get((diodes[0], "1")) != "+5V_CARD":
             problems.append(f"{src} does not reach +5V_CARD through exactly one diode (anode on {src})")
+    # the slot's 5 V reaches the card only through the polyfuse
+    slot = {(r, p) for r, p in bynet["+5V_SLOT"] if not r.startswith("#")}
+    fuse = [r for r, _ in slot if r.startswith("F")]
+    if len(fuse) != 1 or {r for r, _ in slot} != {"J101", fuse[0]} or             {card.get((fuse[0], "1")), card.get((fuse[0], "2"))} != {"+5V_SLOT", "+5V_CON"}:
+        problems.append(f"+5V_SLOT is {sorted(slot)}: the edge's 5 V must reach +5V_CON through exactly one fuse")
     for r, p in bynet["+5V_CON"]:
-        if not (r in ("J101", "U105") or r.startswith(("C", "D", "#"))):
-            problems.append(f"{r}.{p} on +5V_CON: only the edge, the data translator, diodes and capacitors belong there")
+        if not (r in ("U105",) or r.startswith(("C", "D", "F", "#"))):
+            problems.append(f"{r}.{p} on +5V_CON: only the fuse, the data translator, diodes and capacitors belong there")
 
     # FPGA banks at 3.3 V
     for (r, p), n in card.items():
@@ -264,6 +269,7 @@ def selftest(comps, nets):
         ("a console address line on the FPGA", lambda n: move(n, "U1", "G3", "/BUS_A0")),
         ("card edge A0/A1 swapped", lambda n: swap(n, ("J101", "13"), ("J101", "14"))),
         ("USB VBUS shorted to the console's 5 V", lambda n: move(n, "J102", "A4", "/+5V_CON")),
+        ("polyfuse bypassed (edge 5 V straight on +5V_CON)", lambda n: move(n, "J101", "38", "/+5V_CON")),
         ("translator powered from the card rail", lambda n: move(n, "U105", "23", "/+5V_CARD")),
         ("FPGA bank at 2.5 V", lambda n: move(n, "U1", "F6", "/+2V5")),
     ]

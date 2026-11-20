@@ -7893,7 +7893,7 @@
 		(uuid "f8eacaeb-267e-5d91-afee-b742282a3abc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 119.38 96.52 0)
 			(effects (font (size 1.27 1.27)) (hide yes))))
-	(global_label "+5V_CON" (shape passive) (at 119.38 99.06 0) (fields_autoplaced yes)
+	(global_label "+5V_SLOT" (shape passive) (at 119.38 99.06 0) (fields_autoplaced yes)
 		(effects (font (size 1.27 1.27)) (justify left))
 		(uuid "8b08a664-d94b-5b82-9512-23eabcc90948")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}" (at 119.38 99.06 0)
