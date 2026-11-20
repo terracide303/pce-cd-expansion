@@ -152,12 +152,15 @@ def main():
     put("D101", 47.0, 43.0, 0)        # 5 V OR diodes
     put("D102", 47.0, 46.5, 0)
     put("D103", 47.0, 50.0, 0)
-    put("U101", 13.0, 71.5, 90)       # bus row, right behind the slot zone
-    put("U105", 26.0, 69.3, 90)       # 2.2 mm higher than the others: its 33 ohm resistors go between it and the fingers; clear of the SDRAM
-    put("U102", 38.5, 71.5, 90)
-    put("U103", 48.5, 71.5, 90)
-    put("U104", 4.0, 69.5, 0)
-    put("U106", 4.0, 74.5, 0)
+    # The bus row, right behind the slot zone. Each translator sits over the fingers it
+    # serves; seen from the front, pin 38 (+5 V) is at the left edge and pin 1 at the
+    # right (gen_card.py edge_footprint), so A0-A7 (pins 7-14) are right of centre.
+    put("U101", 41.1, 71.5, 90)       # A0-A7
+    put("U105", 28.1, 69.3, 90)       # D0-D7. 2.2 mm higher than the others: its 33 ohm resistors go between it and the fingers; clear of the SDRAM
+    put("U102", 15.6, 71.5, 90)       # A8-A15
+    put("U103", 5.6, 71.5, 90)        # A16-A20, /RD, /WR, /RST
+    put("U104", 50.1, 69.5, 0)        # HSM
+    put("U106", 50.1, 74.5, 0)        # /IRQ2
     # Translators: turn each one so its CONSOLE-side pins (BUS_* / T_D*) face the fingers
     # (larger y) and its FPGA-side pins face the FPGA. Checked on the placed pads, not assumed.
     for ref in ("U101", "U102", "U103", "U104", "U105", "U106"):
@@ -179,10 +182,10 @@ def main():
     # decoupling at its own supply pin, pull-ups at their pin, series resistors on
     # their line. CHIP says which chip a part belongs to.
     CHIP = {**{f"C{120 + i}": "U107" for i in range(12)}, "C135": "U107", "R123": "U107", "R124": "U107",
-            "D104": "U107", "R122": "U107", "Y101": "U107", "C133": "Y101", "C134": "Y101",
+            "D104": "U107", "R122": "U107", "R136": "U107", "Y101": "U107", "C133": "Y101", "C134": "Y101",
             "C132": "U108", "R120": "U108", "R121": "U108", "SW101": "U108",
             "R125": "J102", "R126": "J102", "R127": "U109", "R128": "U109", "C136": "J102",
-            **{f"C{140 + i}": "U110" for i in range(7)}, "R130": "U110", "R131": "U110", "R132": "U110",
+            **{f"C{140 + i}": "U110" for i in range(7)}, "C150": "U110", "C151": "U110", "R130": "U110", "R131": "U110", "R132": "U110",
             "C147": "J103", "C148": "J103", "R133": "U110", "R134": "U110", "R135": "U110", "C149": "U110",
             "C101": "U101", "C102": "U102", "C103": "U103", "C104": "U104", "C105": "U105", "C106": "U105",
             "R101": "U105", "R102": "U105", "C107": "U106", "R103": "U106", "C108": "D101",

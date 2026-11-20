@@ -157,23 +157,33 @@ CUSTOM_LIB = '(kicad_symbol_lib (version 20241209) (generator "pce_card_gen")\n'
 
 
 def edge_footprint():
-    """38 gold fingers, 1.27 mm pitch, 0.75 mm wide, on F.Cu with the mask open
-    (docs/STAGE1-CARD.md §1: repro HuCard geometry, to confirm with T1b/T1d).
-    Origin = the card's edge, centred. Fingers 1 and 38 are 5.5 mm, 21 is 6.0 mm, the rest 5.0 mm.
-    Pin 1 at -x. The board outline belongs to the PCB, not this footprint."""
+    """38 gold fingers, 1.27 mm pitch, 0.75 mm wide, on F.Cu with the mask open, copied
+    from the working repro card (partlyhuman/HuCARD-repro, reverse-pcb/hucard_pcb_v6,
+    J1 HuCard_Edge). Origin = the card's edge, centred. The board outline belongs to
+    the PCB, not this footprint.
+
+    ORDER. The repro numbers its pads from the other end: its pad k is console pin
+    39 - k (its pad 25 is A0 = pin 14, pad 21 the long GND finger = pin 18, pad 1
+    VCC = pin 38). Seen from F.Cu with the fingers at the bottom, console pin 38
+    (+5 V) is at -x and pin 1 at +x. The first version of this footprint had pin 1
+    at -x: in the slot that put the console's +5 V on a ground finger.
+
+    LENGTHS (from the edge inward). Fingers stop 1.3 mm short of the edge (room for
+    the bevel); pins 1 and 38 are 0.5 mm longer at the inner end; pin 18, the only
+    ground, reaches 0.5 mm closer to the edge so it mates first."""
     pads = ""
     for n in range(1, 39):
-        x = (n - 19.5) * 1.27
-        ln = 5.5 if n in (1, 38) else 6.0 if n == 21 else 5.0
-        pads += (f'\t(pad "{n}" connect rect (at {fmt(x)} {fmt(-ln / 2)}) (size 0.75 {fmt(ln)})\n'
+        x = (19.5 - n) * 1.27
+        y0, y1 = (-6.8, -0.8) if n == 18 else (-6.8, -1.3) if n in (1, 38) else (-6.3, -1.3)
+        pads += (f'\t(pad "{n}" connect rect (at {fmt(x)} {fmt((y0 + y1) / 2)}) (size 0.75 {fmt(y1 - y0)})\n'
                  f'\t\t(layers "F.Cu" "F.Mask") (uuid "{uid("edge", n)}"))\n')
     keep = (f'\t(fp_rect (start -27.05 -8.6) (end 27.05 0) (stroke (width 0.1) (type dash)) (fill none) '
             f'(layer "F.Fab") (uuid "{uid("edge", "zone")}"))\n'
             f'\t(fp_text user "slot insertion 8.6 mm: no parts, no vias" (at 0 -7.6) (layer "F.Fab") (uuid "{uid("edge", "t")}")\n'
             f'\t\t(effects (font (size 0.8 0.8) (thickness 0.12))))\n')
     return ('(footprint "HuCard_Edge_38" (version 20240108) (generator "pce_card_gen") (layer "F.Cu")\n'
-            '\t(descr "HuCard edge connector, 38 fingers at 1.27 mm (PC Engine). Geometry from a working repro card, '
-            'docs/STAGE1-CARD.md; print 1:1 and check against a real HuCard before ordering (TEST_PLAN T1b).")\n'
+            '\t(descr "HuCard edge connector, 38 fingers at 1.27 mm (PC Engine). Geometry and pin order from the working HuCARD-repro card '
+            '(its pad k = pin 39-k); print 1:1 and check against a real HuCard before ordering (TEST_PLAN T1b).")\n'
             '\t(attr smd)\n'
             f'\t(fp_text reference "REF**" (at 0 -9.6) (layer "F.SilkS") (uuid "{uid("edge", "ref")}") (effects (font (size 1 1) (thickness 0.15))))\n'
             f'\t(fp_text value "HuCard_Edge_38" (at 0 -6.4) (layer "F.Fab") (uuid "{uid("edge", "val")}") (effects (font (size 1 1) (thickness 0.15))))\n'

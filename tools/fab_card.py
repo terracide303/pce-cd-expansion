@@ -14,7 +14,8 @@ Refuses to write anything if KiCad's DRC (zones refilled, the board's own rules,
 which are the JLCPCB/PCBWay standard floor) finds an unconnected item, a schematic
 difference, or a violation not on the ACCEPTED list below; or if
 tools/fabcheck_card.py finds a via in an SMD pad, a via that is not 0.45/0.2 mm,
-or the ground finger's pre-routed copper missing. The order settings are in
+the ground finger's pre-routed copper missing, or the
+fingers in an order other than the working HuCARD-repro card's. The order settings are in
 docs/ORDER.md.
 """
 import collections, csv, io, json, os, pathlib, shutil, subprocess, sys, tempfile, zipfile
@@ -86,6 +87,8 @@ def check(tmp):
             problems.append(f"via sizes other than 0.45/0.2 mm: {f['via_sizes']}")
         if f["locked_ground"] < 4:
             problems.append("the pre-routed ground-finger copper is missing (tools/preroute_card.py)")
+        if f["edge"]:
+            problems.append("card edge does not match the HuCARD-repro finger order: " + "; ".join(f["edge"]))
     return d, report, problems
 
 

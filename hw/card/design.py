@@ -246,7 +246,9 @@ part("U105", "Logic_LevelTranslator:SN74LVC8T245", "SN74LVC8T245PW", "Package_SO
      "bus", U105)
 cap("C105", "100n", "+3V3", "bus")
 cap("C106", "100n", "+5V_CON", "bus")
-res("R101", "10k", "F_DOE_N", "+3V3", "bus")      # /OE pull-up: off until the FPGA says otherwise
+res("R101", "3.3k", "F_DOE_N", "+3V3", "bus")     # /OE pull-up: off until the FPGA says otherwise. 3.3k, not 10k:
+                                                  # it must beat the ECP5's config-time pull-down (up to 150 uA,
+                                                  # DS FPGA-DS-02012 4.1): 3.3 - 0.5 V stays above V_IH 2.0 V
 res("R102", "10k", "F_DDIR", "GND", "bus")        # DIR pull-down: toward the FPGA
 for i in range(8):                                 # 33 ohm on each data line, console side (stage 1)
     res(f"R{110 + i}", "33", f"T_D{i}", f"BUS_D{i}", "bus")
@@ -256,7 +258,7 @@ for i in range(8):                                 # 33 ohm on each data line, c
 part("U106", "74xGxx:74LVC1G07", "74LVC1G07", "Package_TO_SOT_SMD:SOT-23-5", "bus",
      {"1": None, "2": "F_IRQ2_N", "3": "GND", "4": "BUS_IRQ2_N", "5": "+3V3"})
 cap("C107", "100n", "+3V3", "bus")
-res("R103", "10k", "F_IRQ2_N", "+3V3", "bus")
+res("R103", "3.3k", "F_IRQ2_N", "+3V3", "bus")    # 3.3k for the same reason as R101: no /IRQ2 during configuration
 
 # --- scope test points on the bus (TEST_PLAN T3/T4b/T9) and the two spare FPGA balls
 for ref, net in [("TP101", "BUS_RD_N"), ("TP102", "BUS_WR_N"), ("TP103", "BUS_D0"), ("TP104", "BUS_A20"),
@@ -303,6 +305,7 @@ res("R122", "1k", "RP_XOUT", "RP_XOUT_R", "companion")      # series resistor on
 cap("C133", "15p", "RP_XIN", "companion")
 cap("C134", "15p", "RP_XOUT_R", "companion")
 res("R123", "10k", "RP_RUN", "+3V3", "companion")
+res("R136", "10k", "CO_IRQ", "+3V3", "companion")         # IRQ idle high while the FPGA is unconfigured (its pins pull down then)
 cap("C135", "100n", "RP_RUN", "companion")
 res("R124", "1k", "RP_LED", "RP_LED_A", "companion")         # GPIO25: the firmware's status LED
 part("D104", "Device:LED", "GREEN", "LED_SMD:LED_0603_1608Metric", "companion", {"1": "GND", "2": "RP_LED_A"},
@@ -338,7 +341,9 @@ cap("C142", "1u", "DAC_LDOO", "audio")
 cap("C143", "100n", "+3V3", "audio")   # CPVDD
 cap("C144", "100n", "+3V3", "audio")   # AVDD
 cap("C145", "100n", "+3V3", "audio")   # DVDD
-cap("C146", "10u", "+3V3", "audio", fp=C0603)
+cap("C146", "10u", "+3V3", "audio", fp=C0603)    # DVDD bulk
+cap("C150", "10u", "+3V3", "audio", fp=C0603)    # CPVDD bulk  (PCM5102A datasheet Fig. 33: 0.1 + 10 uF on each supply)
+cap("C151", "10u", "+3V3", "audio", fp=C0603)    # AVDD bulk
 res("R130", "10k", "DAC_XSMT", "+3V3", "audio")              # soft-mute off: play
 res("R131", "470", "DAC_OUTL", "AUD_L", "audio")
 res("R132", "470", "DAC_OUTR", "AUD_R", "audio")

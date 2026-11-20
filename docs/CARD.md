@@ -4,14 +4,15 @@ Decided 2026-11-19 with the owner. This is the board the project ships: one
 HuCard-sized card that is the flash cart and, later, the whole CD-ROM² system,
 EverDrive style. It replaces boards A and B ([CARRIER-ARCH.md](archive/CARRIER-ARCH.md)).
 
-## Status (2026-11-19)
+## Status (2026-11-20)
 
 | step | state |
 |---|---|
 | schematic | **generated** (`hw/card/`, 9 sheets) from `hw/card/design.py` by `tools/gen_card.py` |
 | checks | **all pass** (`python tools/check_card.py --selftest`): KiCad netlist = design; the FPGA core is wired exactly as the working Icepi Zero v1.4 apart from the documented changes; edge, 5 V isolation, safe defaults, power OR-ing, 3.3 V banks; every pin has a pad; ERC. The self-test plants 9 faults and catches all 9 |
-| PCB | **staged** (`tools/make_card_pcb.py`, KiCad's Python): HuCard outline, 4-layer Icepi stack-up, fingers placed and locked, slot keep-out, rules. Schematic parity **0 differences**. Placement and routing: human, brief in [CARD_PLACEMENT.md](CARD_PLACEMENT.md) |
-| BOM | Icepi parts carry their LCSC numbers; **new parts are left empty on purpose**: fill from the fab's library when ordering |
+| review | independent schematic review 2026-11-20: [REVIEW-2026-11-20.md](REVIEW-2026-11-20.md). It found the edge fingers mirrored (fixed) and a few pull-up and decoupling changes (made) |
+| PCB | placed by script (`tools/place_card.py`), fingers in the HuCARD-repro order, ground finger pre-routed; routing in progress. Steps in [WORKFLOW.md](WORKFLOW.md) |
+| BOM | LCSC numbers on the Icepi parts and on the card's plain passives; the rest to fill when ordering ([ORDER.md](ORDER.md)) |
 
 Regenerate after editing `design.py`:
 
@@ -26,7 +27,7 @@ python tools/check_card.py --selftest
 | question | answer |
 |---|---|
 | FPGA | Lattice ECP5 **LFE5U-45F-6BG256**, on the card ([FPGA-ECP5.md](FPGA-ECP5.md)) |
-| size | **HuCard, 54.1 × 85.4 mm**, fingers exactly as a real card ([STAGE1-CARD.md](archive/STAGE1-CARD.md) §1) |
+| size | **HuCard, 54.1 × 85.4 mm**, fingers copied from the working HuCARD-repro card, order and lengths included (`tools/gen_card.py` `edge_footprint`) |
 | video out | **none**: the console's own AV output |
 | SD card, menu, loading | **RP2040 companion** (FPGA-Companion firmware, as in the MiSTle family) |
 | programming | **USB-C + FT231X** on-board USB-JTAG, openFPGALoader |
@@ -43,7 +44,7 @@ Nothing in the FPGA's core circuit is new. It is copied from hardware that works
 | USB-JTAG: FT231XQ bit-banging JTAG, USB-C, ESD | Icepi Zero v1.4 | working |
 | 32 MB SDRAM (W9825G6KH) | Icepi Zero v1.4 | working |
 | microSD (on the FPGA, read by the companion through it) | Icepi Zero v1.4 | working |
-| RP2040 + W25Q16 + 12 MHz crystal, SPI link to the FPGA (SCK, MOSI, MISO, CS, IRQ, RST) | MiniMistle 0.2 (owner's ECP5 board) and the Raspberry Pi RP2040 minimal design | MiniMistle not yet fabbed: cross-check against the Raspberry Pi reference |
+| RP2040 + W25Q16 + 12 MHz crystal, SPI link to the FPGA (SCK, MOSI, MISO, CS, IRQ) | MiniMistle 0.2 (owner's ECP5 board) and the Raspberry Pi RP2040 minimal design | MiniMistle not yet fabbed: cross-check against the Raspberry Pi reference |
 | **card edge, bus translators, audio, power input** | **new**, this project | stage-1 translator design and its 55 ns simulation carry over |
 
 Licence of the copied parts: Icepi Zero is **Solderpad Hardware v2.1**
@@ -54,7 +55,8 @@ Licence of the copied parts: Icepi Zero is **Solderpad Hardware v2.1**
 ```
  console slot (38 fingers, 5 V)                         outer end of the card
  ──────────────────────────────                          ─────────────────────
- A0–A20, /RD, /WR, /RST, HSM ──► 74LVC245A ×4 (3.3 V, 5 V-tolerant in) ──► ECP5
+ A0–A20, /RD, /WR, /RST ──► 74LVC245A ×3 (3.3 V, 5 V-tolerant in) ──► ECP5
+ HSM ──► 74LVC1G34 ──► ECP5
  D0–D7 ◄──33 Ω──► SN74LVC8T245 (B = console 5 V, A = 3.3 V) ◄──────────► ECP5
                      DIR, /OE ◄── ECP5 (pulled safe: /OE high, DIR toward FPGA)
  /IRQ2 ◄── 74LVC1G07 open drain ◄── ECP5
@@ -100,11 +102,13 @@ The card drops the Icepi's Pi header, HDMI port and FPGA soft-USB ports, freeing
 
 | bank | balls freed | used for |
 |---|---|---|
-| 6, 7 (30) | header GPIO + GPDI control | A0–A20, /RD, /WR, /RST, HSM, DIR, /OE, IRQ2 (28) |
-| 3 (9) | GPDI data pairs + HPD | D0–D7 (8) |
-| 0, 1, 2 (10) | header GPIO + soft-USB | RP2040 link (6), I2S to the DAC (3) |
+| old Pi header (32) | header GPIO | D0–D7, DIR, /OE, A0–A19, /RD, /WR |
+| old GPDI pairs (8) | GPDI data | RP2040 link (5), I2S to the DAC (3) |
+| old soft-USB / GPDI control (9) | | A20, /RST, HSM, /IRQ2, two spares to test points |
 
-**Needed ~45 of 49.** At 7.16 MHz any ball in a bank serves, so the exact
+The exact balls are in `FREED` in `hw/card/design.py`.
+
+**Needed 46 of 49.** At 7.16 MHz any ball in a bank serves, so the exact
 assignment is the layout's choice. The schematic gives a starting map, swappable
 within the bank.
 

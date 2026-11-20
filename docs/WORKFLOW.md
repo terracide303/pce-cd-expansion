@@ -30,6 +30,11 @@ in KiCad, stop running them and edit in KiCad (or teach `place_card.py` the chan
 - **Pin assignment follows placement.** The FPGA's freed balls (`design.FREED`) are
   assigned by the side they land on: the right side faces the bus channel, the left
   side carries the slow signals. Moving the FPGA means revisiting FREED.
+- **A copied footprint is checked by signal, not by pad number.** The edge was copied
+  from HuCARD-repro, whose pads are numbered from the other end. Taking those numbers
+  as console pins mirrored the card and put the console's +5 V on a ground finger.
+  It passed every netlist check: only comparing each finger's *signal* against the
+  repro's found it. `fabcheck_card.py` now checks the order.
 - **Small parts sit at the pin they serve**, not merely near their chip.
 - **Chips are turned by checking their placed pads**, never by assuming an orientation.
 - **A label must not be readable as another part's**: beside its own part, never under one (hidden once soldered), nearest to its own. If no such spot exists, it goes to the assembly layer; a wrong label is worse than none.

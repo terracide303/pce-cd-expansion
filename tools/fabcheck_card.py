@@ -7,6 +7,10 @@
   solder from the joint; filling and capping costs extra at both fabs.
 - via_sizes: every via size on the board (the card allows one: 0.45/0.2 mm).
 - locked_ground: the pre-routed ground-finger copper is still there (tools/preroute_card.py).
+- edge: the finger order matches the working HuCARD-repro card. Seen from F.Cu with the
+  fingers at the bottom, pin 38 (+5 V) is leftmost and pin 1 rightmost, and pin 18 (the
+  only ground) is the finger nearest the edge. Mirrored, the console's +5 V lands on a
+  ground finger. Empty when correct.
 """
 import collections, json, pathlib, sys
 
@@ -35,7 +39,27 @@ def main():
                 if near and shape.Collide(c, r):
                     in_pads.append(f"{fp.GetReference()}.{p.GetNumber()}")
     locked_gnd = sum(1 for t in b.GetTracks() if t.IsLocked() and t.GetNetname() == "GND")
-    print(json.dumps({"vias_in_pads": sorted(set(in_pads)), "via_sizes": dict(sizes), "locked_ground": locked_gnd}))
+    print(json.dumps({"vias_in_pads": sorted(set(in_pads)), "via_sizes": dict(sizes), "locked_ground": locked_gnd,
+                      "edge": edge(b)}))
+
+
+def edge(b):
+    j = b.FindFootprintByReference("J101")
+    if j is None:
+        return ["no J101"]
+    pads = {p.GetNumber(): p for p in j.Pads()}
+    x = {n: p.GetPosition().x for n, p in pads.items()}
+    nearest = max(pads.values(), key=lambda p: p.GetBoundingBox().GetBottom()).GetNumber()
+    problems = []
+    if j.IsFlipped() or any(not p.IsOnLayer(pcbnew.F_Cu) for p in pads.values()):
+        problems.append("fingers not on F.Cu")
+    if min(x, key=x.get) != "38" or max(x, key=x.get) != "1":
+        problems.append(f"leftmost finger is {min(x, key=x.get)}, rightmost {max(x, key=x.get)} (want 38 and 1)")
+    if pads["38"].GetNetname() != "+5V_CON" or pads["18"].GetNetname() != "GND":
+        problems.append("pin 38 is not +5V_CON or pin 18 is not GND")
+    if nearest != "18":
+        problems.append(f"finger nearest the edge is {nearest}, want 18 (ground mates first)")
+    return problems
 
 
 if __name__ == "__main__":
