@@ -83,7 +83,7 @@ def check(tmp):
         f = json.loads(line)
         if f["vias_in_pads"]:
             problems.append(f"{len(f['vias_in_pads'])} SMD pad(s) with a via in them: {', '.join(f['vias_in_pads'][:10])}")
-        if set(f["via_sizes"]) - {"0.45/0.2"}:
+        if set(f["via_sizes"]) - {"0.45/0.2", "0.6/0.3"}:
             problems.append(f"via sizes other than 0.45/0.2 mm: {f['via_sizes']}")
         if f["locked_ground"] < 4:
             problems.append("the pre-routed ground-finger copper is missing (tools/preroute_card.py)")

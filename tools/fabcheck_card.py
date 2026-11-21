@@ -5,7 +5,11 @@
 
 - vias_in_pads: vias whose hole touches an SMD pad. An open via there wicks
   solder from the joint; filling and capping costs extra at both fabs.
-- via_sizes: every via size on the board (the card allows one: 0.45/0.2 mm).
+  ICEPI_VIA_IN_PAD lists the pads where the Icepi Zero's own copper (copied by
+  tools/copy_icepi_copper_card.py) has a via in the pad: the capacitors and R51 under the
+  BGA. They are reported apart (icepi_vias_in_pads), not as faults. Whether to order
+  those vias filled and capped is an open owner decision (docs/REVIEW-2026-11-20.md).
+- via_sizes: every via size on the board (ours 0.45/0.2 mm; the Icepi's copied 0.6/0.3 mm).
 - locked_ground: the pre-routed ground-finger copper is still there (tools/preroute_card.py).
 - edge: the finger order matches the working HuCARD-repro card. Seen from F.Cu with the
   fingers at the bottom, pin 38 (+5 V) is leftmost and pin 1 rightmost, and pin 18 (the
@@ -18,6 +22,8 @@ import pcbnew
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PCB = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "hw" / "card" / "pce_card.kicad_pcb"
+ICEPI_VIA_IN_PAD = {"C10.1", "C10.2", "C2.2", "C24.1", "C27.2", "C28.1", "C29.1", "C31.1", "C6.2",
+                    "C7.1", "C7.2", "C9.1", "C9.2", "R51.1", "R51.2"}   # the Icepi's layout under U1
 
 
 def main():
@@ -39,7 +45,9 @@ def main():
                 if near and shape.Collide(c, r):
                     in_pads.append(f"{fp.GetReference()}.{p.GetNumber()}")
     locked_gnd = sum(1 for t in b.GetTracks() if t.IsLocked() and t.GetNetname() == "GND")
-    print(json.dumps({"vias_in_pads": sorted(set(in_pads)), "via_sizes": dict(sizes), "locked_ground": locked_gnd,
+    print(json.dumps({"vias_in_pads": sorted(set(in_pads) - ICEPI_VIA_IN_PAD),
+                      "icepi_vias_in_pads": sorted(set(in_pads) & ICEPI_VIA_IN_PAD),
+                      "via_sizes": dict(sizes), "locked_ground": locked_gnd,
                       "edge": edge(b)}))
 
 
