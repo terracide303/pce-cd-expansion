@@ -15,8 +15,10 @@ SDRAM is the timing-critical part; the Icepi's SDRAM routing is proven on hardwa
 What is copied (transformed by the same rotation and shift as the block):
   - every track and via of a net that is IDENTICAL on both boards: the same pads, all on
     kept Icepi parts, and no other pad on our side;
-  - for the power nets (GND, +3V3, +1V1, +2V5, PWR_FILTERED_2V5), only the copper under
-    the FPGA (its courtyard), where the core balls and the capacitors under it are;
+  - for the power nets (GND, +3V3, +1V1, +2V5, PWR_FILTERED_2V5), the copper within 1 mm
+    of a block part (the first version took only the copper under the FPGA, and the SDRAM's
+    ground and 3.3 V pins were then left to the router); power track ends that lead to a
+    dropped part are pruned;
   - the Icepi's +1V1 zones (the In2 island under the core, and its F/B pours).
 All of it is locked, so the router keeps it. Then a DRC pass removes any copied item
 that clashes with our own parts or copper, and the script prints what it removed.
@@ -95,11 +97,17 @@ def main(icepi_path):
             same[n] = t
     print(f"identical signal nets: {len(same)}; power nets copied under the FPGA: {sorted(set(power.values()))}")
 
-    u1 = ours["U1"].GetCourtyard(pcbnew.F_CrtYd).BBox()
-    u1.Inflate(FM(0.3))
+    # power copper is copied where the block is: within 1 mm of a block part's courtyard
+    boxes = []
+    for r in block:
+        for lay in (pcbnew.F_CrtYd, pcbnew.B_CrtYd):
+            c = ours[r].GetCourtyard(lay)
+            if c.OutlineCount():
+                bb = c.BBox(); bb.Inflate(FM(1.0)); boxes.append(bb)
 
     def inside(x, y):
-        return u1.Contains(pcbnew.VECTOR2I(FM(x), FM(y)))
+        q = pcbnew.VECTOR2I(FM(x), FM(y))
+        return any(bb.Contains(q) for bb in boxes)
 
     added = []
     for t in ice.GetTracks():
@@ -130,6 +138,70 @@ def main(icepi_path):
         item.SetNet(net); item.SetLocked(True)
         b.Add(item); added.append(item)
     print(f"copied {len(added)} tracks and vias")
+
+    # power copper that now leads nowhere (it went to a part the card dropped): prune
+    # track ends that touch no pad, via or other track of their net, until none is left
+    def prune():
+        pw = {i.m_Uuid.AsString(): i for i in added if i.GetNetname() in POWER}
+        gone = set()
+        while True:
+            live = [i for k, i in pw.items() if k not in gone]
+            pads_by_net = collections.defaultdict(list)
+            for f in b.GetFootprints():
+                for p in f.Pads():
+                    pads_by_net[p.GetNetCode()].append(p)
+            items = [t for t in b.GetTracks() if t.m_Uuid.AsString() not in gone]
+            dead = []
+            for i in live:
+                if i.GetClass() == "PCB_VIA":
+                    continue
+                for e in (i.GetStart(), i.GetEnd()):
+                    ok = any(p.IsOnLayer(i.GetLayer()) and p.HitTest(e) for p in pads_by_net[i.GetNetCode()])
+                    if not ok:
+                        for o in items:
+                            if o.m_Uuid.AsString() == i.m_Uuid.AsString() or o.GetNetCode() != i.GetNetCode():
+                                continue
+                            if o.GetClass() == "PCB_VIA":
+                                if (o.GetPosition() - e).EuclideanNorm() <= o.GetWidth(pcbnew.F_Cu) // 2:
+                                    ok = True; break
+                            elif o.GetLayer() == i.GetLayer() and o.GetEffectiveShape().Collide(e, i.GetWidth() // 2):
+                                ok = True; break
+                    if not ok:
+                        dead.append(i); break
+            if not dead:
+                return gone
+            for i in dead:
+                gone.add(i.m_Uuid.AsString())
+    # copied vias in an SMD pad the card does not accept (tools/fabcheck_card.py allows only
+    # the listed Icepi pads under the BGA, exposed thermal pads and bare test points), and
+    # vias closer to the board edge than the fab's 0.3 mm: removed; the router reconnects
+    sys.path.insert(0, str(ROOT / "tools"))
+    from fabcheck_card import via_pad_allowed
+    edge = b.GetBoardEdgesBoundingBox()
+    edge.Inflate(-FM(0.05))                         # the box includes half the outline stroke
+    smd = [(f, p) for f in b.GetFootprints() for p in f.Pads() if p.GetAttribute() == pcbnew.PAD_ATTRIB_SMD]
+    drop = []
+    for i in added:
+        if i.GetClass() != "PCB_VIA":
+            continue
+        c, r = i.GetPosition(), i.GetDrillValue() // 2
+        for f, p in smd:
+            L = pcbnew.F_Cu if p.IsOnLayer(pcbnew.F_Cu) else pcbnew.B_Cu
+            if p.GetEffectiveShape(L).Collide(c, r) and not via_pad_allowed(f, p):
+                drop.append((i, f"{f.GetReference()}.{p.GetNumber()}")); break
+        else:
+            m = i.GetWidth(pcbnew.F_Cu) // 2 + FM(0.3)
+            if min(c.x - edge.GetLeft(), edge.GetRight() - c.x, c.y - edge.GetTop(), edge.GetBottom() - c.y) < m:
+                drop.append((i, "edge"))
+    for i, why in drop:
+        b.Remove(i); added.remove(i)
+    if drop:
+        print(f"removed {len(drop)} copied vias: {sorted(w for _, w in drop)}")
+    gone = prune()
+    for i in list(added):
+        if i.m_Uuid.AsString() in gone:
+            b.Remove(i); added.remove(i)
+    print(f"pruned {len(gone)} power track pieces that led to dropped parts")
 
     nz = 0
     for z in ice.Zones():

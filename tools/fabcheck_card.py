@@ -7,7 +7,8 @@
   solder from the joint; filling and capping costs extra at both fabs.
   ICEPI_VIA_IN_PAD lists the pads where the Icepi Zero's own copper (copied by
   tools/copy_icepi_copper_card.py) has a via in the pad: the capacitors and R51 under the
-  BGA. They are reported apart (icepi_vias_in_pads), not as faults. Whether to order
+  BGA. They are reported apart (icepi_vias_in_pads), not as faults. Vias in an exposed
+  thermal pad or a bare test point are not counted (via_pad_allowed). Whether to order
   those vias filled and capped is an open owner decision (docs/REVIEW-2026-11-20.md).
 - via_sizes: every via size on the board (ours 0.45/0.2 mm; the Icepi's copied 0.6/0.3 mm).
 - locked_ground: the pre-routed ground-finger copper is still there (tools/preroute_card.py).
@@ -24,6 +25,15 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PCB = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "hw" / "card" / "pce_card.kicad_pcb"
 ICEPI_VIA_IN_PAD = {"C10.1", "C10.2", "C2.2", "C24.1", "C27.2", "C28.1", "C29.1", "C31.1", "C6.2",
                     "C7.1", "C7.2", "C9.1", "C9.2", "R51.1", "R51.2"}   # the Icepi's layout under U1
+
+
+def via_pad_allowed(fp, pad):
+    """A via may touch this pad: the listed Icepi pads under the BGA, an exposed thermal
+    pad (vias there carry heat to the planes, standard practice), or a bare test point
+    (nothing is soldered to it)."""
+    name = f"{fp.GetReference()}.{pad.GetNumber()}"
+    return (name in ICEPI_VIA_IN_PAD or pad.GetNumber() in ("", "EP", "0")
+            or fp.GetFieldText("Reference").startswith("TP"))
 
 
 def main():
@@ -43,7 +53,8 @@ def main():
                 c = v.GetPosition()
                 near = box.GetX() - r <= c.x <= box.GetRight() + r and box.GetY() - r <= c.y <= box.GetBottom() + r
                 if near and shape.Collide(c, r):
-                    in_pads.append(f"{fp.GetReference()}.{p.GetNumber()}")
+                    if not via_pad_allowed(fp, p) or f"{fp.GetReference()}.{p.GetNumber()}" in ICEPI_VIA_IN_PAD:
+                        in_pads.append(f"{fp.GetReference()}.{p.GetNumber()}")
     locked_gnd = sum(1 for t in b.GetTracks() if t.IsLocked() and t.GetNetname() == "GND")
     print(json.dumps({"vias_in_pads": sorted(set(in_pads) - ICEPI_VIA_IN_PAD),
                       "icepi_vias_in_pads": sorted(set(in_pads) & ICEPI_VIA_IN_PAD),
