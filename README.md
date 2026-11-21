@@ -1,12 +1,13 @@
 # PC Engine CD-ROM² card
 
-> **Work in progress.** Nothing has been built or tested yet.
+> **Beta.** The PCB design is done, nothing has been built or tested yet. The FPGA core
+> is still in development and will not be public until it is done.
 
 A HuCard-sized card for the PC Engine / TurboGrafx-16. It plugs into the
 **HuCard slot** and emulates the CD-ROM² system from a microSD card. No
 expansion-port hardware and no CD unit are needed.
 
-![The card, part-way through routing](pics/card-routing-in-progress-top.png)
+![The card](pics/card-3d.png)
 
 ## On the card
 
@@ -22,14 +23,14 @@ expansion-port hardware and no CD unit are needed.
 | part | state |
 |---|---|
 | schematic | done, checked |
-| PCB | placed, routing in progress |
-| FPGA core | being ported |
+| PCB | done, beta |
+| FPGA core | in development, not public yet |
 | ordered / tested | no |
 
 ## Layout
 
 - `hw/card/`: KiCad project
-- `tools/`: scripts that generate, check, place and route the board, and make the fab files
+- `tools/`: scripts that generate, check and lay out the board, and make the fab files
 - `docs/`: [the card](docs/CARD.md), [how it is built](docs/WORKFLOW.md), [ordering](docs/ORDER.md); old notes in `docs/archive/`
 
 ## Credits
