@@ -303,6 +303,10 @@
     "netclass_patterns": [
       {
         "netclass": "Power",
+        "pattern": "+5V_SLOT"
+      },
+      {
+        "netclass": "Power",
         "pattern": "+5V_CON"
       },
       {
