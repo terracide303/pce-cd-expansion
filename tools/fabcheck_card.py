@@ -24,7 +24,8 @@ import pcbnew
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PCB = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "hw" / "card" / "pce_card.kicad_pcb"
 ICEPI_VIA_IN_PAD = {"C10.1", "C10.2", "C2.2", "C24.1", "C27.2", "C28.1", "C29.1", "C31.1", "C6.2",
-                    "C7.1", "C7.2", "C9.1", "C9.2", "R51.1", "R51.2"}   # the Icepi's layout under U1
+                    "C7.1", "C7.2", "C9.1", "C9.2", "R51.1", "R51.2",   # the Icepi's layout under U1
+                    "U11.3"}   # SDRAM VDD: the Icepi's via, no clear spot beside the pin (2026-11-21)
 
 
 def via_pad_allowed(fp, pad):
