@@ -11,7 +11,7 @@ EverDrive style. It replaces boards A and B ([CARRIER-ARCH.md](archive/CARRIER-A
 | schematic | **generated** (`hw/card/`, 9 sheets) from `hw/card/design.py` by `tools/gen_card.py` |
 | checks | **all pass** (`python tools/check_card.py --selftest`): KiCad netlist = design; the FPGA core is wired exactly as the working Icepi Zero v1.4 apart from the documented changes; edge, 5 V isolation, safe defaults, power OR-ing, 3.3 V banks; every pin has a pad; ERC. The self-test plants 9 faults and catches all 9 |
 | review | independent schematic review 2026-11-20: [REVIEW-2026-11-20.md](REVIEW-2026-11-20.md). It found the edge fingers mirrored (fixed) and a few pull-up and decoupling changes (made) |
-| PCB | placed by script (`tools/place_card.py`), fingers in the HuCARD-repro order, ground finger pre-routed; routing in progress. Steps in [WORKFLOW.md](WORKFLOW.md) |
+| PCB | placed by script (`tools/place_card.py`), fingers in the HuCARD-repro order, ground finger pre-routed. Done (beta). Steps in [WORKFLOW.md](WORKFLOW.md) |
 | BOM | LCSC numbers on the Icepi parts and on the card's plain passives; the rest to fill when ordering ([ORDER.md](ORDER.md)) |
 
 Regenerate after editing `design.py`:
